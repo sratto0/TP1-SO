@@ -32,6 +32,6 @@ typedef struct {
     sem_t E; // Mutex para la siguiente variable
     unsigned int F; // Cantidad de jugadores leyendo el estado
     sem_t G[9]; // Le indican a cada jugador que puede enviar 1 movimiento
-} ZZZ;
+} sync_t;
 
 #endif
