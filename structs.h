@@ -13,16 +13,16 @@ typedef struct {
     unsigned short x, y; // Coordenadas x e y en el tablero
     pid_t process_id; // Identificador de proceso
     bool blocked; // Indica si el jugador está bloqueado
-} player;
+} player_t;
 
 typedef struct {
     unsigned short width; // Ancho del tablero
     unsigned short height; // Alto del tablero
     unsigned int player_count; // Cantidad de jugadores
-    player players[9]; // Lista de jugadores
+    player_t players[9]; // Lista de jugadores
     bool finish; // Indica si el juego se ha terminado
     int board[]; // Puntero al comienzo del tablero. fila-0, fila-1, ..., fila-n-1
-} game;
+} game_t;
 
 typedef struct {
     sem_t A; // El máster le indica a la vista que hay cambios por imprimir
