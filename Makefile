@@ -1,2 +1,2 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -std=gnu99 -Wall
