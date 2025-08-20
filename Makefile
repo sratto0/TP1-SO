@@ -18,6 +18,9 @@ view: $(OBJS_VIEW)
 #master: $(OBJS_MASTER)
 #	$(CC) $(CFLAGS) -o $@ $^
 
+format:
+	clang-format -style=file --sort-includes --Werror -i *.c *.h
+
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 

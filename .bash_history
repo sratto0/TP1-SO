@@ -80,3 +80,9 @@ cd root
 make
 make all
 exit
+make format
+make format
+cd ./root
+make format
+install clang-format
+exit
