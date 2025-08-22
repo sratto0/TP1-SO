@@ -28,7 +28,8 @@ sync_t *open_sync_memory() {
     err_exit("shm_open");
   }
 
-  sync_t *sync = mmap(NULL, sizeof(*sync), PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0);
+  sync_t *sync =
+      mmap(NULL, sizeof(*sync), PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0);
   if (sync == MAP_FAILED) {
     err_exit("mmap");
   }
