@@ -22,18 +22,18 @@ typedef struct {
   unsigned short height;     // Alto del tablero
   unsigned int player_count; // Cantidad de jugadores
   player_t players[9];       // Lista de jugadores
-  bool finish;               // Indica si el juego se ha terminado
+  bool finished;               // Indica si el juego se ha terminado
   int board[]; // Puntero al comienzo del tablero. fila-0, fila-1, ..., fila-n-1
 } game_t;
 
 typedef struct {
-  sem_t A; // El máster le indica a la vista que hay cambios por imprimir
-  sem_t B; // La vista le indica al máster que terminó de imprimir
-  sem_t C; // Mutex para evitar inanición del máster al acceder al estado
-  sem_t D; // Mutex para el estado del juego
-  sem_t E; // Mutex para la siguiente variable
-  unsigned int F; // Cantidad de jugadores leyendo el estado
-  sem_t G[9];     // Le indican a cada jugador que puede enviar 1 movimiento
+  sem_t master_to_view; // El máster le indica a la vista que hay cambios por imprimir
+  sem_t view_to_master; // La vista le indica al máster que terminó de imprimir
+  sem_t writer_lock; // Mutex para evitar inanición del máster al acceder al estado
+  sem_t state_lock; // Mutex para el estado del juego
+  sem_t readers_mutex; // Mutex para la siguiente variable
+  unsigned int readers_count; // Cantidad de jugadores leyendo el estado
+  sem_t players_ready[9];     // Le indican a cada jugador que puede enviar 1 movimiento
 } sync_t;
 
 #endif

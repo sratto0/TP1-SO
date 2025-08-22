@@ -1,7 +1,7 @@
 #include "view.h"
+#include <ncurses.h>
 
 void print_board(game_t *game) {
-
   for (int j = 0; j < game->width; j++) {
     printf(" ___");
   }
@@ -19,10 +19,31 @@ void print_board(game_t *game) {
     }
     printf("|\n");
   }
+
 }
 
 int main() {
   game_t *game = open_game_memory();
   sync_t *sync = open_sync_memory();
-  print_board(game);
+
+  
+  while(true){
+    if(sem_wait(&sync->master_to_view) == -1){
+      if(errno == EINTR) continue;
+      perror("sem_wait master_to_view");
+      break;
+    }
+
+    print_board(game);
+
+    if(sem_post(&sync->view_to_master) == -1){
+      perror("sem_post view_to_master");
+      break;
+    }
+
+  
+    if(game->finished) {
+      break;
+    }
+  }
 }

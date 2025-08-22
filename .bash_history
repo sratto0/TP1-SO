@@ -86,3 +86,79 @@ cd ./root
 make format
 install clang-format
 exit
+make
+cd root
+make
+./ChompChamps -p sofi -v ./view
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player ./player -v ./view
+./ChompChamps -p ./player -v ./view
+strace -f ./ChompChamps -p ./player -v ./view
+make
+make
+apt-get update
+apt-get install -y libncurses5-dev libncursesw5-dev
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player ./player -v ./view
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player 0 -v ./view
+make
+./ChompChamps -p ./player 0 -v ./view
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+make
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player ./player -v ./view
+./ChompChamps -p ./player ./player -v ./view
+./ChompChamps -p ./player ./player ./player -v ./view
+./ChompChamps -p ./player ./player ./player -v ./view
+./ChompChamps -p ./player ./player ./player -v ./view
+exit

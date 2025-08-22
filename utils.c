@@ -23,12 +23,12 @@ game_t *open_game_memory() {
 }
 
 sync_t *open_sync_memory() {
-  int fd2 = shm_open("/game_sync", O_RDONLY, 0600);
+  int fd2 = shm_open("/game_sync", O_RDWR, 0600);
   if (fd2 == -1) {
     err_exit("shm_open");
   }
 
-  sync_t *sync = mmap(NULL, sizeof(*sync), PROT_READ, MAP_SHARED, fd2, 0);
+  sync_t *sync = mmap(NULL, sizeof(*sync), PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0);
   if (sync == MAP_FAILED) {
     err_exit("mmap");
   }
