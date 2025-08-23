@@ -1,5 +1,4 @@
 #include "view.h"
-#include <ncurses.h>
 
 void print_board(game_t *game) {
   for (int j = 0; j < game->width; j++) {

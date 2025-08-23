@@ -162,3 +162,41 @@ make
 ./ChompChamps -p ./player ./player ./player -v ./view
 ./ChompChamps -p ./player ./player ./player -v ./view
 exit
+cd ./root
+make all
+make all
+./ChompChamps -p ./player -v ./view
+sudo apt-get update
+apt-get update
+apt-get install libncurses5-dev libncursesw5-dev
+make all
+./ChompChamps -p ./player -v ./view
+apt-get update
+apt-get install -y build-essential libncurses5-dev libncursesw5-dev
+./ChompChamps -p ./player -v ./view
+make all
+./ChompChamps -p ./player -v ./view
+clear
+exit
+cd ./root
+make all
+apt-get install -y build-essential libncurses5-dev libncursesw5-dev
+apt-get install libncurses5-dev libncursesw5-dev
+make all
+./ChompChamps -p ./player -v ./view
+exit
+cd ./root
+make all
+apt-get install libncurses5-dev libncursesw5-dev
+make all
+./ChompChamps -p ./player -v ./view
+make all
+./ChompChamps -p ./player -v ./view
+make all
+./ChompChamps -p ./player -v ./view
+make all
+./ChompChamps -p ./player -v ./view
+./ChompChamps -p ./player -v ./view
+make all
+./ChompChamps -p ./player -v ./view
+exit
