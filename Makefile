@@ -26,3 +26,6 @@ format:
 
 #clean:
 #	rm -f *.o player master view
+
+clean:
+	rm -f *.o player view

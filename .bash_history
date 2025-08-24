@@ -200,3 +200,28 @@ make all
 make all
 ./ChompChamps -p ./player -v ./view
 exit
+./master_amd/ChompChamps -p ./player -v ./view
+cd ./root
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+make
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+./master_arm/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+ls
+./master_amd/ChompChamps -p ./player -v ./view
+make
+./master_amd/ChompChamps -p ./player -v ./view
+exit
+./master_amd/ChompChamps -p ./player -v ./view
+cd root
+make clean
+make
+make
+make
+make clean
+make
+./master_amd/ChompChamps -p ./player -v ./view
+make
+exit

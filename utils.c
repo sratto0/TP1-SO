@@ -5,34 +5,59 @@
     perror(msg);                                                               \
     exit(EXIT_FAILURE);                                                        \
   } while (0);
-#define MAP_FAILED ((void *)-1)
 
-game_t *open_game_memory() {
-  int fd = shm_open("/game_state", O_RDONLY, 0600);
-  if (fd == -1) {
-    err_exit("shm_open");
+
+void * open_memory(const char * name, size_t size, int flags){
+  int fd = shm_open(name, flags, 0);
+  if (fd == -1)
+  err_exit("shm_open");
+
+  int prot;
+  if(flags == O_RDONLY){
+    prot = PROT_READ;
+  } else {
+    prot = PROT_READ | PROT_WRITE;
   }
 
-  game_t *game = mmap(NULL, sizeof(*game), PROT_READ, MAP_SHARED, fd, 0);
-
-  if (game == MAP_FAILED) {
+  void * mem = mmap(NULL, size, prot, MAP_SHARED, fd, 0);
+  if (mem == MAP_FAILED) {
     err_exit("mmap");
   }
 
-  return game;
+  return mem;
+}
+
+game_t *open_game_memory() {
+  return (game_t *)open_memory("/game_state", sizeof(game_t), O_RDONLY);
 }
 
 sync_t *open_sync_memory() {
-  int fd2 = shm_open("/game_sync", O_RDWR, 0600);
-  if (fd2 == -1) {
+  return (sync_t *)open_memory("/game_sync", sizeof(sync_t), O_RDWR);
+}
+
+void * create_memory(const char * name, size_t size) {
+  int fd = shm_open(name, O_CREAT | O_RDWR, 0666); 
+  if(fd == -1){
     err_exit("shm_open");
   }
-
-  sync_t *sync =
-      mmap(NULL, sizeof(*sync), PROT_READ | PROT_WRITE, MAP_SHARED, fd2, 0);
-  if (sync == MAP_FAILED) {
+  
+  if(ftruncate(fd, size) == -1){
+    err_exit("ftruncate");
+  }
+  
+  void * mem = mmap(NULL, sizeof(size), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  if(mem == MAP_FAILED){
     err_exit("mmap");
   }
-
-  return sync;
+  //close(fd);
+  return mem;
 }
+
+game_t * create_game_memory(){
+  return (game_t *)create_memory("/game_state", sizeof(game_t));
+}
+
+sync_t * create_sync_memory(){
+  return (sync_t *)create_memory("/game_sync", sizeof(sync_t));
+}
+
