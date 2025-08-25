@@ -33,6 +33,16 @@ int main(int argc, char *argv[]) {
 
   while (true) {
 
+    if (sem_wait(&sync->writer_lock) == -1) {
+        perror("sem_wait writer_lock");
+        break;
+    }
+    
+    if (sem_post(&sync->writer_lock) == -1) {
+        perror("sem_post writer_lock");
+        break;
+    }
+
     if (sem_wait(&sync->players_ready[player_id]) == -1) {
       if (errno == EINTR)
         continue;
@@ -62,7 +72,7 @@ int main(int argc, char *argv[]) {
       break;
     }
 
-    unsigned char move = choose_move(player_id);
+    unsigned char move = choose_move(player_id); //Esto está en el lugar incorrecto. Estamos eligiendo el movimiento antes de liberar el mutex del juego. Acá sólo se debería consultar el estado y no elegir el movimiento
 
     if (sem_wait(&sync->readers_mutex) == -1) {
       perror("sem_wait readers_mutex");
@@ -81,8 +91,6 @@ int main(int argc, char *argv[]) {
       perror("sem_post readers_mutex");
       break;
     }
-    // printf("movimientos invalidos: %d\n", game->players[0].invalid_requests);
-    // fflush(stdout);
 
     write(1, &move, sizeof(move));
   }
