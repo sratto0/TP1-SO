@@ -225,3 +225,29 @@ make
 ./master_amd/ChompChamps -p ./player -v ./view
 make
 exit
+cd root
+make clean
+make
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player ./player ./player -v ./view
+./master_amd/ChompChamps -p ./player ./player ./player -v ./view
+./master_amd/ChompChamps -p ./player ./player ./player -v ./view
+./master_amd/ChompChamps -p ./player ./player ./player -v ./view
+sudo apt-get update
+exit
+apt-get update
+apt-get update
+apt-get update
+apt-get update
+apt-get install -y libncurses5-dev libncursesw5-dev
+make clean
+make
+cd root
+make clean
+make
+./master_amd/ChompChamps -p ./player -v ./view
+export TERM=xterm-256color
+./master_amd/ChompChamps -p ./player -v ./view
+export TERM=xterm-256color
+echo $TERM
+exit

@@ -13,7 +13,7 @@ player: $(OBJS_PLAYER)
 	$(CC) $(CFLAGS) -o $@ $^
 
 view: $(OBJS_VIEW)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lncurses -lrt -pthread
 
 #master: $(OBJS_MASTER)
 #	$(CC) $(CFLAGS) -o $@ $^
