@@ -251,3 +251,12 @@ export TERM=xterm-256color
 export TERM=xterm-256color
 echo $TERM
 exit
+cd root
+make 
+make 
+make analyze
+make 
+make analyze
+pvs-studio-analyzer credentials PVS-Studio Free FREE-FREE-FREE-FREE
+make analyze
+exit
