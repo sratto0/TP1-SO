@@ -1,4 +1,3 @@
-
 #include "master.h"
 
 int main(int argc, char *argv[]) {
@@ -13,10 +12,10 @@ int main(int argc, char *argv[]) {
     unsigned int delay = 200;
     unsigned int timeout = 10;
     unsigned int seed = time(NULL);
-    
-    
+    char * players_paths[9] = {NULL};
 
-    while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p")) != -1) {
+
+    while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p:")) != -1) {
         switch (opt) {
             case 'w':
                 game->width = atoi(optarg);
@@ -37,8 +36,9 @@ int main(int argc, char *argv[]) {
                 view_path = optarg;
                 break;
             case 'p':
-                // 
                 
+                // primero con getopt habria que tener la cantidad de players
+                players_paths[0] = "./player"; // hardcodeado para probarlo con 1 jugador
                 break;
             default:
                 fprintf(stderr, "Uso: %s [-w width] [-h height] [-v view]\n", argv[0]);
@@ -47,8 +47,7 @@ int main(int argc, char *argv[]) {
     }
     
     
-    pid_t cpid_view;
-    cpid_view = fork();
+    pid_t cpid_view = fork();
     
     char argv_width[MAX_DIGITS] = {0};
     char argv_height[MAX_DIGITS] = {0};
@@ -59,13 +58,8 @@ int main(int argc, char *argv[]) {
     if (cpid_view == -1) {
         err_exit("fork");
     }
-    // para este punto ya tenemos que tener width y height guardadas en el struct
     if(cpid_view == 0) {
-        char * argv_view[3];
-        argv_view[0] = view_path;
-        argv_view[1] = argv_width;
-        argv_view[2] = argv_height;
-        
+        char * argv_view[] = {view_path, argv_width, argv_height, NULL};
         execve(argv_view[0], argv_view, NULL);        
     } 
     
@@ -76,18 +70,15 @@ int main(int argc, char *argv[]) {
         err_exit("pipe");
     }
     
-    char * argv_player[3];
     for(unsigned int i = 0; i < game->player_count; i++){
+        char * argv_player[] = {players_paths[i], argv_width, argv_height, NULL};
         pid_t cpid_player = fork();
         if(cpid_player == -1){
             err_exit("fork");
         }
         if(cpid_player == 0){
-            argv_player[0] = ;
-            argv_player[1] = argv_width;
-            argv_player[2] = argv_height;
-            execve();
             close(pipefd[0]);
+            execve(argv_player[0], argv_player, NULL);
         } else {
             close(pipefd[1]);
             game->players[i].process_id = cpid_player;
@@ -125,6 +116,5 @@ void init_semaphores(sync_t *sync) {
 void init_game(game_t *game){
     game->width = 10;
     game->height = 10;
-    
     
 }
