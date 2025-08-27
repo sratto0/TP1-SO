@@ -260,3 +260,58 @@ make analyze
 pvs-studio-analyzer credentials PVS-Studio Free FREE-FREE-FREE-FREE
 make analyze
 exit
+make analyze
+cd root
+make analyze
+make analyze
+make analyze
+make
+clean
+make clean
+make
+make clean
+make
+make clean
+make
+make clean
+make
+make
+make clean
+make
+make analyze
+make valgrind_player
+make valgrind_player
+make valgrind_view
+make valgrind_view -s
+make valgrind_view
+make clean
+make valgrind_view
+make clean
+make 
+make valgrind_view
+make clean
+make valgrind_view
+make analyze
+make valgrind_view
+make valgrind_player
+make valgrind_player
+make analyze
+make analyze
+make valgrind_player
+cat PVS-Studio.log
+make valgrind_player
+make analyze
+make analyze
+make analyze
+make analyze(int)(i + 1)
+make analyze
+make analyze
+make valgrind_player
+make clean
+make
+make valgrind_player
+man 2 pipe
+man 7 pipe
+man 2 pipe
+man select
+exit

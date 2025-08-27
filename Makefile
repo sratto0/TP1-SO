@@ -2,8 +2,10 @@
 # PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 
 CC = gcc
+CFLAGS = -std=gnu99 -Wall -Werror -g -Wextra -Iinclude
+# CFLAGS = -std=gnu99 -Wall 
 # CFLAGS = -std=gnu99 -Wall -Werror -g -Wextra -fsanitize=address -Iinclude
-CFLAGS = -std=gnu99 -Wall 
+
 
 OBJS_PLAYER = player.o utils.o
 OBJS_VIEW = view.o utils.o
@@ -46,16 +48,17 @@ deps:
 analyze: clean 
 	$(PVS_ANALYZER) trace -- make all
 	$(PVS_ANALYZER) analyze -o PVS-Studio.log
-	$(PVS_REPORT) -a GA:1,2 -t fullhtml PVS-Studio.log -o PVS-Studio.html
+	$(PVS_REPORT) -a GA:1,2,3,4 -t fullhtml PVS-Studio.log -o PVS-Studio.html
+# 	$(PVS_REPORT) -t fullhtml PVS-Studio.log -o PVS-Studio.html
 
-valgrind-player: player
+valgrind_player: player
 	$(VALGRIND) ./player
 
-valgrind-view: view
+valgrind_view: view
 	$(VALGRIND) ./view
 
-valgrind-master: master
-	$(VALGRIND) ./master
+# valgrind-master: master
+# 	$(VALGRIND) ./master
 
 .PHONY: all player view format clean deps analyse valgrind-view valgrind-player
 

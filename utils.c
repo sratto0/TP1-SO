@@ -3,11 +3,7 @@
 
 #include "utils.h"
 
-#define err_exit(msg)                                                          \
-  do {                                                                         \
-    perror(msg);                                                               \
-    exit(EXIT_FAILURE);                                                        \
-  } while (0);
+
 
 
 void * open_memory(const char * name, size_t size, int flags){

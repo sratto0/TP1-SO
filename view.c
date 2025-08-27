@@ -276,7 +276,7 @@ int get_player_color(int player_id) {
 }
 
 // Función para verificar si un jugador está bloqueado
-bool is_player_blocked(game_t *game, int player_id) {
+bool is_player_blocked(game_t *game, unsigned int player_id) {
     // Un jugador está bloqueado si no tiene movimientos válidos disponibles
     int x = game->players[player_id].x;
     int y = game->players[player_id].y;
@@ -293,7 +293,7 @@ bool is_player_blocked(game_t *game, int player_id) {
         if (new_x >= 0 && new_x < game->width && new_y >= 0 && new_y < game->height) {
             // Verificar si la celda no está ocupada por otro jugador
             bool occupied = false;
-            for (int p = 0; p < game->player_count; p++) {
+            for (unsigned int p = 0; p < game->player_count; p++) {
                 if (p != player_id && game->players[p].x == new_x && game->players[p].y == new_y) {
                     occupied = true;
                     break;
@@ -347,7 +347,7 @@ void print_board_ncurses(game_t *game) {
             // Verificar si hay un jugador en esta celda
             bool has_player = false;
             int player_id = -1;
-            for (int p = 0; p < game->player_count; p++) {
+            for (unsigned int p = 0; p < game->player_count; p++) {
                 if (game->players[p].x == j && game->players[p].y == i) {
                     has_player = true;
                     player_id = p;
@@ -406,20 +406,20 @@ void print_board_ncurses(game_t *game) {
     mvprintw(score_y, 2, "Scoreboard");
     attroff(COLOR_PAIR(COLOR_PAIR_INFO) | A_BOLD);
     
-    for (int i = 0; i < game->player_count; i++) {
+    for (unsigned int i = 0; i < game->player_count; i++) {
         attron(COLOR_PAIR(get_player_color(i)));
-        mvprintw(score_y + i + 1, 2, "P%d", i + 1);
+        mvprintw(score_y + i + 1, 2, "P%d", (int)(i + 1));
         attroff(COLOR_PAIR(get_player_color(i)));
         
         attron(COLOR_PAIR(COLOR_PAIR_INFO));
-        mvprintw(score_y + i + 1, 6, "player%d", i + 1);
+        mvprintw(score_y + i + 1, 6, "player%d", (int)(i + 1));
         
         // Verificar si está bloqueado usando la función
         bool blocked = is_player_blocked(game, i);
         mvprintw(score_y + i + 1, 20, "Score: %3d  Moves: %2d/%2d [%s]",
-                 game->players[i].score,
-                 game->players[i].valid_requests,
-                 game->players[i].invalid_requests,
+                (int) game->players[i].score,
+                (int) game->players[i].valid_requests,
+                (int) game->players[i].invalid_requests,
                  blocked ? "BLOCKED" : "ACTIVE");
         attroff(COLOR_PAIR(COLOR_PAIR_INFO));
     }
@@ -430,9 +430,9 @@ void print_board_ncurses(game_t *game) {
     mvprintw(score_y, legend_x, "Legend");
     attroff(COLOR_PAIR(COLOR_PAIR_INFO) | A_BOLD);
     
-    for (int i = 0; i < game->player_count; i++) {
+    for (unsigned int i = 0; i < game->player_count; i++) {
         attron(COLOR_PAIR(get_player_color(i)));
-        mvprintw(score_y + 1 + i, legend_x, "P%d - Player %d", i + 1, i + 1);
+        mvprintw(score_y + 1 + i, legend_x, "P%d - Player %d",(int)(i + 1), (int)(i + 1));
         attroff(COLOR_PAIR(get_player_color(i)));
     }
     

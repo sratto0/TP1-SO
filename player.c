@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
+
 #include "player.h"
 
 int main(int argc, char *argv[]) {
@@ -9,26 +12,13 @@ int main(int argc, char *argv[]) {
   game_t *game = open_game_memory();
   sync_t *sync = open_sync_memory();
 
-  int player_id = 0;
+  unsigned int player_id = 0;
   int pid_p = getpid();
   while (player_id < game->player_count) {
     if (game->players[player_id].process_id == pid_p) {
       break;
     }
     player_id++;
-  }
-
-  // for (int i=0; game->players[i].process_id != NULL; i++) {
-  //   if (game->players[i].process_id == pid_p) {
-  //     player_id = i + 1;
-  //     break;
-  //   }
-  // }
-
-  if (player_id < 0 || player_id >= game->player_count) {
-    fprintf(stderr, "Error: ID de jugador %d no válido. Rango válido: 0-%d\n",
-            player_id, game->player_count - 1);
-    return 1;
   }
 
   while (true) {
@@ -99,7 +89,7 @@ int main(int argc, char *argv[]) {
 }
 
 // Función para elegir el mejor movimiento basado en los valores de celdas adyacentes
-unsigned char choose_move(int player_id) { 
+unsigned char choose_move(unsigned int player_id) { 
     game_t *game = open_game_memory();
     int x = game->players[player_id].x;
     int y = game->players[player_id].y;
@@ -129,7 +119,7 @@ unsigned char choose_move(int player_id) {
     
     // Imprimir información de depuración
     printf("Jugador %d en (%d,%d) eligió dirección %d con valor %d\n", 
-           player_id, x, y, best_direction, best_value);
+           (int)player_id, x, y, best_direction, best_value);
     
     return best_direction;
 }
