@@ -315,3 +315,20 @@ man 7 pipe
 man 2 pipe
 man select
 exit
+make format
+cd root
+make format
+apt-get update && apt-get install -y clang-format
+make format
+make format
+cd root
+make format
+sudo apt update; sudo apt install clang-format -y
+apt update
+apt update
+apt install clang-format -y
+make format
+make format
+make format
+make format
+make format
