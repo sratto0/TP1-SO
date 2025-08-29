@@ -62,26 +62,52 @@ int main(int argc, char *argv[]) {
     execve(argv_view[0], argv_view, NULL);
   }
 
-  int pipefd[2];
-
-  if (pipe(pipefd) == -1) {
-    err_exit("pipe");
-  }
-
-  for (unsigned int i = 0; i < game->player_count; i++) {
+  int player_pipes[MAX_PLAYERS][2];
+  for(unsigned int i = 0; i < game->player_count; i++){
     char *argv_player[] = {players_paths[i], argv_width, argv_height, NULL};
+    if(pipe(player_pipes[i]) == -1){
+      err_exit("pipe");
+    }
     pid_t cpid_player = fork();
     if (cpid_player == -1) {
       err_exit("fork");
     }
     if (cpid_player == 0) {
-      close(pipefd[0]);
+      if(close(player_pipes[i][0])==-1) {
+        err_exit("close");
+      }  //cierra read end para child
+
+      if(dup2(player_pipes[i][1], STDOUT_FILENO) == -1){
+        err_exit("dup2");
+      }
+
+      if(close(player_pipes[i][1])) {
+        err_exit("close");
+      }  // ya no lo necesita, lo tiene en stdout
+      
+      
       execve(argv_player[0], argv_player, NULL);
     } else {
-      close(pipefd[1]);
+      if(close(player_pipes[i][1]) == -1){
+        err_exit("close");
+      }  //cierra write end para parent
       game->players[i].process_id = cpid_player;
+      game->players[i].blocked = false;
     }
   }
+
+  while(true){
+    //recibir movimientos 
+
+    sem_wait(&sync->writer_lock);
+    sem_wait(&sync->state_lock);
+    sem_post(&sync->writer_lock);
+
+    //ejecutar movimientos
+
+    sem_post(&sync->state_lock);
+  }
+
 }
 
 void init_semaphores(sync_t *sync) {
@@ -112,3 +138,4 @@ void init_game(game_t *game) {
   game->width = 10;
   game->height = 10;
 }
+
