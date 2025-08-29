@@ -1,13 +1,7 @@
 #ifndef MASTER_H
+#define MASTER_H
 
-#include "structs.h"
-#include "utils.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#define MAX_DIGITS 15 // CHEQUEAR!!
-#define MAX_PLAYERS 9
+#include "master_lib.h"
 
 extern char **environ;
 

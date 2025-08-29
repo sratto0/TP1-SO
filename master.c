@@ -4,7 +4,7 @@ int main(int argc, char *argv[]) {
   game_t *game = open_game_memory();
   sync_t *sync = open_sync_memory();
 
-  init_semaphores(sync);
+  init_sync(sync);
   init_game(game);
 
   int opt;
@@ -61,13 +61,22 @@ int main(int argc, char *argv[]) {
     char *argv_view[] = {view_path, argv_width, argv_height, NULL};
     execve(argv_view[0], argv_view, NULL);
   }
+  
 
   int player_pipes[MAX_PLAYERS][2];
+  
   for(unsigned int i = 0; i < game->player_count; i++){
-    char *argv_player[] = {players_paths[i], argv_width, argv_height, NULL};
     if(pipe(player_pipes[i]) == -1){
       err_exit("pipe");
     }
+  }
+  
+  fd_set read_fds, active_fds;
+  int max_fd = 0;
+
+  FD_ZERO(&active_fds);
+
+  for(unsigned int i = 0; i < game->player_count; i++){
     pid_t cpid_player = fork();
     if (cpid_player == -1) {
       err_exit("fork");
@@ -84,58 +93,147 @@ int main(int argc, char *argv[]) {
       if(close(player_pipes[i][1])) {
         err_exit("close");
       }  // ya no lo necesita, lo tiene en stdout
-      
-      
+     
+      for(unsigned int j = 0 ; j < game->player_count; j++){
+        if(i != j){
+          close(player_pipes[j][0]);
+          close(player_pipes[j][1]);
+        }
+      }
+
+      char *argv_player[] = {players_paths[i], argv_width, argv_height, NULL};
       execve(argv_player[0], argv_player, NULL);
     } else {
       if(close(player_pipes[i][1]) == -1){
         err_exit("close");
       }  //cierra write end para parent
+
+      FD_SET(player_pipes[i][0], &active_fds);
+      if (player_pipes[i][0] > max_fd) {
+        max_fd = player_pipes[i][0];
+      }
+
       game->players[i].process_id = cpid_player;
       game->players[i].blocked = false;
     }
   }
 
-  while(true){
-    //recibir movimientos 
+
+  for(unsigned int p = 0; p < game->player_count; p++){
+    sem_post(&sync->players_ready[p]);
+  }
+  
+  
+  struct timeval tv;
+  bool all_blocked;
+  time_t current_time;
+  time_t last_valid_moves;
+
+  time(&current_time);
+  last_valid_moves = current_time;
+
+
+  while(!game->finished){
+    //recibir movimientos
+
+    sem_wait(&sync->view_to_master);
+    sem_post(&sync->master_to_view);
+    
+    tv.tv_sec = 0;
+    tv.tv_usec = delay * 1000;
+
+    read_fds = active_fds;
+
+    int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
+
+    if(ready == -1){
+      if(errno == EINTR) continue; //interrumpido por señal
+      err_exit("select");
+    }
+
+    time(&current_time);
+
+    if(difftime(current_time, last_valid_moves) > timeout){
+      game->finished = true;
+      sem_post(&sync->state_lock);  // Liberamos el lock en caso de haber terminado
+      continue;
+    }
 
     sem_wait(&sync->writer_lock);
     sem_wait(&sync->state_lock);
     sem_post(&sync->writer_lock);
 
+    all_blocked = true; //todos bloqueados hasta comprobar
+
+    //verifico por cada jugador
+    for(unsigned int i = 0; i < game->player_count; i++){
+      if(game->players[i].blocked) continue;
+
+      if(!has_valid_moves(game, &game->players[i])){
+        game->players[i].blocked = true;
+        FD_CLR(player_pipes[i][0], &active_fds);
+        continue;
+      }
+
+      all_blocked = false;
+
+      if(FD_ISSET(player_pipes[i][0], &read_fds)){
+        unsigned char move;
+        ssize_t bytes_read = read(player_pipes[i][0], &move, sizeof(move));
+
+        if(bytes_read == 0){
+          //EOF
+          game->players[i].blocked = true;
+          FD_CLR(player_pipes[i][0], &active_fds);
+          continue;
+        }
+        if(bytes_read != sizeof(move)){
+          if(errno != EINTR) perror("read");
+          continue;
+        }
+
+        int new_x = game->players[i].x + directions[move][0];
+        int new_y = game->players[i].y + directions[move][1];
+
+        if(is_valid_move(new_x, new_y, game)){
+          bool occupied = false;
+          for(unsigned int j = 0; j < game->player_count; j++){
+            if(j != i && game->players[j].x == new_x && game->players[j].y == new_y){
+              occupied = true;
+              break;
+            }
+          }
+          if(!occupied){
+            int cell_value = game->board[new_y * game->width + new_x];
+            game->players[i].score += cell_value;
+            game->players[i].x = new_x;
+            game->players[i].y = new_y;
+            game->players[i].valid_requests++;
+
+            last_valid_moves = current_time;
+          }else{
+            game->players[i].invalid_requests++;
+          }
+        }else{
+          game->players[i].invalid_requests++;
+        }
+
+        sem_post(&sync->players_ready[i]);
+      }
+    }
+
     //ejecutar movimientos
 
     sem_post(&sync->state_lock);
+
+    
+
+    //si todos estan bloqueados se termina
+    if(all_blocked) game->finished = true;
+
+    return 0;
   }
 
 }
 
-void init_semaphores(sync_t *sync) {
-  if (sem_init(&sync->master_to_view, 1, 0) == -1)
-    err_exit("sem_init master_to_view");
-
-  if (sem_init(&sync->view_to_master, 1, 1) == -1)
-    err_exit("sem_init view_to_master");
-
-  if (sem_init(&sync->writer_lock, 1, 1) == -1)
-    err_exit("sem_init writer_lock");
-
-  if (sem_init(&sync->state_lock, 1, 1) == -1)
-    err_exit("sem_init state_lock");
-
-  if (sem_init(&sync->readers_mutex, 1, 1) == -1)
-    err_exit("sem_init readers_mutex");
-
-  sync->readers_count = 0;
-
-  for (int i = 0; i < 9; i++) {
-    if (sem_init(&sync->players_ready[i], 1, 0) == -1)
-      err_exit("sem_init players_ready");
-  }
-}
-
-void init_game(game_t *game) {
-  game->width = 10;
-  game->height = 10;
-}
 
