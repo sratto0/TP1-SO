@@ -355,3 +355,55 @@ exit
 man select
 man sem_init
 exit
+cd root
+make
+make
+make
+make
+make
+make
+exit
+cd root
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make
+make clean
+make
+make
+make
+make
+make
+./master -p ./player -v ./view
+make analyze
+make analyze
+exit

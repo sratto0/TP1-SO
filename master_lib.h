@@ -10,25 +10,32 @@
 #include <sys/select.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
 
 #define MAX_DIGITS 15 // CHEQUEAR!!
 #define MAX_PLAYERS 9
-#define M_PI 3.14159265358979323846
 
-const int directions[8][2] = {
-    {1, 0},   // right
-    {1, 1},   // down-right
-    {0, 1},   // down
-    {-1, 1},  // down-left
-    {-1, 0},  // left
-    {-1, -1}, // up-left
-    {0, -1},  // up
-    {1, -1}   // up-right
-};
+
+extern char **environ;
+extern const int directions[8][2];
 
 void init_sync(sync_t *sync);
-void init_game(game_t *game);
+void init_game(game_t *game, unsigned short width, unsigned short height, unsigned int player_count);
 void init_semaphore(sem_t *sem, int value);
 bool has_valid_moves(game_t *game, player_t *player);
 bool is_valid_move(int x, int y, game_t *game);
+void fill_board(game_t *game);
+void init_players(game_t * game, int players_fds[][2], int player_count, int *max_fd);
+void init_semaphores(sync_t *sync);
+void close_sems(sync_t *sync, unsigned int player_count);
+void close_not_needed_fds(int players_fds[][2], int player_count, int current_player);
+void safe_close(int fd);
+int game_ended(game_t * game);
+void game_over(game_t *game, sync_t *sync);
+int receive_move(int fd, unsigned char *dir);
+bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir);
+void player_pos(game_t *game);
+
+
 #endif

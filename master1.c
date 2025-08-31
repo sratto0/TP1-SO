@@ -37,7 +37,6 @@ int main(int argc, char *argv[]) {
       view_path = optarg;
       break;
     case 'p':
-
       // primero con getopt habria que tener la cantidad de players
       players_paths[0] = "./player"; // hardcodeado para probarlo con 1 jugador
       break;
@@ -90,11 +89,11 @@ int main(int argc, char *argv[]) {
           err_exit("Execve error");
         }
       }
-
     } else {
       printf("View path is not executable or does not exist\n");
       view_path = NULL;
     }
+  }
 
     int players_fds[player_count][2];
     int max_fd;
@@ -142,31 +141,84 @@ int main(int argc, char *argv[]) {
     time_t last_move_time = time(NULL);
     
 
-    while(!game->finished){
-      receive_move();  
-      //  pensar semaforos        
+    int last_served = 0; // para implementar round-robin
 
-      //  hacemos el select  
-      read_fds = active_fds;
-      tv.tv_sec = timeout;
-      tv.tv_usec = 0;
-
-      int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
-      if(ready == -1){
-        err_exit("Select error");
-      }else if(ready == 0){
-        game_over(game, sync);
-      }else{
-        if(){ //logica para ver cual jugador movio
-
-            usleep(delay * 1000);
+    while (!game->finished) {
+        if (game_ended(game, player_count)) {
+            game_over(game, sync);
+            break;
         }
-        if(game->finished){
-          game_over(game, sync);
+
+        // Timeout global (tiempo sin movimientos válidos)
+        if (time(NULL) - last_move_time > timeout) {
+            printf("Timeout global alcanzado\n");
+            game_over(game, sync);
+            break;
         }
-      }
+
+        read_fds = active_fds;
+        struct timeval tv = { .tv_sec = timeout, .tv_usec = 0 };
+
+        int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
+        if (ready == -1) {
+            perror("select");
+            break;
+        } else if (ready == 0) {
+            printf("Timeout: nadie movió\n");
+            game_over(game, sync);
+            break;
+        }
+
+        // Round-robin: recorrer jugadores a partir de last_served
+        for (int j = 0; j < player_count; j++) {
+            int i = (last_served + j) % player_count;
+
+            //otro fd_isset para que se ajuste a tener una receive y una execute
+            if (FD_ISSET(players_fds[i][0], &read_fds)) {
+
+              sem_wait_check(&sync->players_ready[i]); 
+              
+              unsigned char dir;
+              int result = receive_move(players_fds[i][0], &dir);
+
+              if (result == -1) {
+                  printf("Jugador %s terminó (EOF)\n", game->players[i].name);
+                  game->players[i].blocked = true;
+              } else {
+                  bool moved = execute_move(game, sync, i, dir);
+                  if (moved) {
+                      last_move_time = time(NULL);
+
+                      // máster ↔ vista
+                      sem_post_check(&sync->master_to_view);
+                      sem_wait_c(&sync->view_to_master);
+
+                      usleep(delay * 1000);
+                  }
+              }
+              sem_post(&sync->players_ready[i]); // habilito jugador
+              last_served = (i + 1) % player_count;
+              break; // solo un movimiento por ronda
+          
+
+            }
+        }
+    } //while
+
+    int view_ret;
+    if (view_path != NULL) {
+      waitpid(view_pid, &view_ret, 0);
+      printf("El view (%s) devolvio el valor %d\n", view_path, view_ret);
     }
 
-    
-  }
+    for (int i = 0; i < player_count; i++) {
+      if (game->players[i].process_id != 0) {
+        int status;
+        safe
+        waitpid(game->players[i].process_id, &status, 0);
+        printf("El player %s devolvio el valor %d\n", game->players[i].name,
+               WEXITSTATUS(status));
+      }
+    }
 }
+

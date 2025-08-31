@@ -1,11 +1,14 @@
-#include "master.h"
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java:
+// https://pvs-studio.com
+
+#include "master_lib.h"
 
 int main(int argc, char *argv[]) {
-  game_t *game = open_game_memory();
-  sync_t *sync = open_sync_memory();
 
-  init_sync(sync);
-  init_game(game);
+  if (argc < 3) {
+    err_exit("Incorrect number of arguments\n");
+  }
 
   int opt;
   char *view_path = NULL;
@@ -13,14 +16,17 @@ int main(int argc, char *argv[]) {
   unsigned int timeout = 10;
   unsigned int seed = time(NULL);
   char *players_paths[9] = {NULL};
+  int player_count = 0;
+  unsigned short width = 20;
+  unsigned short height = 10;
 
   while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p:")) != -1) {
     switch (opt) {
     case 'w':
-      game->width = atoi(optarg);
+      width = atoi(optarg);
       break;
     case 'h':
-      game->height = atoi(optarg);
+      height = atoi(optarg);
       break;
     case 'd':
       delay = atoi(optarg);
@@ -35,9 +41,11 @@ int main(int argc, char *argv[]) {
       view_path = optarg;
       break;
     case 'p':
-
-      // primero con getopt habria que tener la cantidad de players
-      players_paths[0] = "./player"; // hardcodeado para probarlo con 1 jugador
+      // // primero con getopt habria que tener la cantidad de players
+      // players_paths[0] = "./player"; // hardcodeado para probarlo con 1 jugador
+      // break;
+      players_paths[player_count] = optarg;  // Usar optarg en lugar de hardcodear
+      player_count++;                       // Incrementar el contador
       break;
     default:
       fprintf(stderr, "Uso: %s [-w width] [-h height] [-v view]\n", argv[0]);
@@ -46,191 +54,183 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  pid_t cpid_view = fork();
+  if (player_count < 1 || player_count > 9) {
+    err_exit("Invalid number of players");
+  }
+
+  game_t *game = create_game_memory(sizeof(game_t) + (width * height * sizeof(int)));
+  sync_t *sync = create_sync_memory(sizeof(sync_t));
+
+  init_sync(sync);
+  init_game(game, width, height, player_count);
+
+  fill_board(game);
 
   char argv_width[MAX_DIGITS] = {0};
   char argv_height[MAX_DIGITS] = {0};
 
-  sprintf(argv_height, "%d", game->height);
   sprintf(argv_width, "%d", game->width);
+  sprintf(argv_height, "%d", game->height);
 
-  if (cpid_view == -1) {
-    err_exit("fork");
-  }
-  if (cpid_view == 0) {
-    char *argv_view[] = {view_path, argv_width, argv_height, NULL};
-    execve(argv_view[0], argv_view, NULL);
-  }
+  printf("width = %d\nheight = %d\ndelay = %dms\ntimeout = %ds\nseed=%d\nview "
+         "= %s\nplayers:\n",
+         width, height, delay, timeout, seed,
+         view_path != NULL ? view_path : " - ");
 
-  int player_pipes[MAX_PLAYERS][2];
-
-  for (unsigned int i = 0; i < game->player_count; i++) {
-    if (pipe(player_pipes[i]) == -1) {
-      err_exit("pipe");
-    }
+  for (int i = 0; i < player_count; i++) {
+    printf("  %s\n", players_paths[i]);
   }
 
-  fd_set read_fds, active_fds;
-  int max_fd = 0;
+  sleep(2);
 
-  FD_ZERO(&active_fds);
-
-  for (unsigned int i = 0; i < game->player_count; i++) {
-    pid_t cpid_player = fork();
-    if (cpid_player == -1) {
-      err_exit("fork");
-    }
-    if (cpid_player == 0) {
-      if (close(player_pipes[i][0]) == -1) {
-        err_exit("close");
-      } // cierra read end para child
-
-      if (dup2(player_pipes[i][1], STDOUT_FILENO) == -1) {
-        err_exit("dup2");
-      }
-
-      if (close(player_pipes[i][1])) {
-        err_exit("close");
-      } // ya no lo necesita, lo tiene en stdout
-
-      for (unsigned int j = 0; j < game->player_count; j++) {
-        if (i != j) {
-          close(player_pipes[j][0]);
-          close(player_pipes[j][1]);
+  pid_t view_pid;
+  if (view_path != NULL) {
+    if (access(view_path, X_OK) == 0) {
+      view_pid = fork();
+      if (view_pid == -1) {
+        err_exit("Fork error");
+      } else if (view_pid == 0) {
+        char *view_argv[] = {view_path, argv_width, argv_height, NULL};
+        if (execve(view_path, view_argv, NULL) == -1) {
+          err_exit("Execve error");
         }
       }
-
-      char *argv_player[] = {players_paths[i], argv_width, argv_height, NULL};
-      execve(argv_player[0], argv_player, NULL);
     } else {
-      if (close(player_pipes[i][1]) == -1) {
-        err_exit("close");
-      } // cierra write end para parent
-
-      FD_SET(player_pipes[i][0], &active_fds);
-      if (player_pipes[i][0] > max_fd) {
-        max_fd = player_pipes[i][0];
-      }
-
-      game->players[i].process_id = cpid_player;
-      game->players[i].blocked = false;
+      printf("View path is not executable or does not exist\n");
+      view_path = NULL;
     }
   }
 
-  for (unsigned int p = 0; p < game->player_count; p++) {
-    sem_post(&sync->players_ready[p]);
-  }
-
-  struct timeval tv;
-  bool all_blocked;
-  time_t current_time;
-  time_t last_valid_moves;
-
-  time(&current_time);
-  last_valid_moves = current_time;
-
-  while (!game->finished) {
-    // recibir movimientos
-
-    sem_wait(&sync->view_to_master);
-    sem_post(&sync->master_to_view);
-
-    tv.tv_sec = 0;
-    tv.tv_usec = delay * 1000;
-
-    read_fds = active_fds;
-
-    int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
-
-    if (ready == -1) {
-      if (errno == EINTR)
-        continue; // interrumpido por señal
-      err_exit("select");
-    }
-
-    time(&current_time);
-
-    if (difftime(current_time, last_valid_moves) > timeout) {
-      game->finished = true;
-      sem_post(
-          &sync->state_mutex); // Liberamos el lock en caso de haber terminado
-      continue;
-    }
-
-    sem_wait(&sync->writer_mutex);
-    sem_wait(&sync->state_mutex);
-    sem_post(&sync->writer_mutex);
-
-    all_blocked = true; // todos bloqueados hasta comprobar
-
-    // verifico por cada jugador
-    for (unsigned int i = 0; i < game->player_count; i++) {
-      if (game->players[i].blocked)
-        continue;
-
-      if (!has_valid_moves(game, &game->players[i])) {
-        game->players[i].blocked = true;
-        FD_CLR(player_pipes[i][0], &active_fds);
-        continue;
-      }
-
-      all_blocked = false;
-
-      if (FD_ISSET(player_pipes[i][0], &read_fds)) {
-        unsigned char move;
-        ssize_t bytes_read = read(player_pipes[i][0], &move, sizeof(move));
-
-        if (bytes_read == 0) {
-          // EOF
-          game->players[i].blocked = true;
-          FD_CLR(player_pipes[i][0], &active_fds);
-          continue;
-        }
-        if (bytes_read != sizeof(move)) {
-          if (errno != EINTR)
-            perror("read");
-          continue;
-        }
-
-        int new_x = game->players[i].x + directions[move][0];
-        int new_y = game->players[i].y + directions[move][1];
-
-        if (is_valid_move(new_x, new_y, game)) {
-          bool occupied = false;
-          for (unsigned int j = 0; j < game->player_count; j++) {
-            if (j != i && game->players[j].x == new_x &&
-                game->players[j].y == new_y) {
-              occupied = true;
-              break;
-            }
+    int players_fds[player_count][2];
+    int max_fd;
+    
+    init_players(game, players_fds, player_count, &max_fd);
+    
+    
+    for (int i = 0; i < player_count; i++) {
+      if (access(players_paths[i], X_OK) == 0) {
+        pid_t player_pid = fork();
+        if (player_pid == -1) {
+          err_exit("Fork error");
+        } else if (player_pid == 0) {
+          close_not_needed_fds(players_fds, player_count, i);
+          if (dup2(players_fds[i][1], STDOUT_FILENO) == -1) {
+            err_exit("Dup2 error");
           }
-          if (!occupied) {
-            int cell_value = game->board[new_y * game->width + new_x];
-            game->players[i].score += cell_value;
-            game->players[i].x = new_x;
-            game->players[i].y = new_y;
-            game->players[i].valid_requests++;
-
-            last_valid_moves = current_time;
-          } else {
-            game->players[i].invalid_requests++;
+          safe_close(players_fds[i][1]);
+          char *player_argv[] = {players_paths[i], argv_width, argv_height,
+                                 NULL};
+          if (execve(player_argv[0], player_argv, NULL) == -1) {
+            err_exit("Execve error");
           }
         } else {
-          game->players[i].invalid_requests++;
+          game->players[i].process_id = player_pid;
         }
-
-        sem_post(&sync->players_ready[i]);
+      } else {
+        game->players[i].process_id = 0;
       }
     }
 
-    // ejecutar movimientos
+    fd_set read_fds, active_fds;
+    FD_ZERO(&active_fds);
 
-    sem_post(&sync->state_mutex);
+    for (int i = 0; i < player_count; i++) {
+      if (game->players[i].process_id == 0) {
+        safe_close(players_fds[i][0]);
+      } else {
+        FD_SET(players_fds[i][0], &active_fds);
+      }
+      safe_close(players_fds[i][1]);
+    }
 
-    // si todos estan bloqueados se termina
-    if (all_blocked)
-      game->finished = true;
+    time_t last_move_time = time(NULL);
+    
 
+    int last_served = 0; // para implementar round-robin
+
+    while (!game->finished) {
+        if (game_ended(game)) {
+            game_over(game, sync);
+            break;
+        }
+
+        // Timeout global (tiempo sin movimientos válidos)
+        if (time(NULL) - last_move_time > timeout) {
+            printf("Timeout global alcanzado\n");
+            game_over(game, sync);
+            break;
+        }
+
+        read_fds = active_fds;
+        struct timeval tv = { .tv_sec = timeout, .tv_usec = 0 };
+
+        int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
+        if (ready == -1) {
+            perror("select");
+            break;
+        } else if (ready == 0) {
+            printf("Timeout: nadie movió\n");
+            game_over(game, sync);
+            break;
+        }
+
+        // Round-robin: recorrer jugadores a partir de last_served
+        for (int j = 0; j < player_count; j++) {
+            int i = (last_served + j) % player_count;
+
+            //otro fd_isset para que se ajuste a tener una receive y una execute
+            if (FD_ISSET(players_fds[i][0], &read_fds)) {
+
+              sem_wait_check(&sync->players_ready[i]); 
+              
+              unsigned char dir;
+              int result = receive_move(players_fds[i][0], &dir);
+
+              if (result == -1) {
+                  printf("Jugador %s terminó (EOF)\n", game->players[i].name);
+                  game->players[i].blocked = true;
+              } else {
+                  bool moved = execute_move(game, sync, i, dir);
+                  if (moved) {
+                      last_move_time = time(NULL);
+
+                      // máster ↔ vista
+                      sem_post_check(&sync->master_to_view);
+                      sem_wait_check(&sync->view_to_master);
+
+                      usleep(delay * 1000);
+                  }
+              }
+              sem_post(&sync->players_ready[i]); // habilito jugador
+              last_served = (i + 1) % player_count;
+              break; // solo un movimiento por ronda
+          
+
+            }
+        }
+    } //while
+
+    int view_ret;
+    if (view_path != NULL) {
+      waitpid(view_pid, &view_ret, 0);
+      printf("El view (%s) devolvio el valor %d\n", view_path, view_ret);
+    }
+
+    for (int i = 0; i < player_count; i++) {
+      int status;
+      if (game->players[i].process_id != 0) {
+        safe_close(players_fds[i][0]);
+        waitpid(game->players[i].process_id, &status, 0);
+      }else {
+        status = 256;
+      }
+      printf("El player %s devolvio el valor %d\n", game->players[i].name, status);
+    }
+
+    close_sems(sync, game->player_count);
+    close_memory(game, sizeof(game_t) + (width * height * sizeof(int)));
+    close_memory(sync, sizeof(sync_t));
+    
     return 0;
-  }
 }
+

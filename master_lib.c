@@ -1,4 +1,20 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java:
+// https://pvs-studio.com
+
 #include "master_lib.h"
+
+const int directions[8][2] = {
+    {1, 0},   // right
+    {1, 1},   // down-right
+    {0, 1},   // down
+    {-1, 1},  // down-left
+    {-1, 0},  // left
+    {-1, -1}, // up-left
+    {0, -1},  // up
+    {1, -1}   // up-right
+};
+
 
 void init_sync(sync_t *sync) {
   init_semaphore(&sync->master_to_view, 0);
@@ -48,7 +64,7 @@ bool is_valid_move(int x, int y, game_t *game) {
           game->board[y * game->width + x] <= 9);
 }
 
-void init_player(game_t *game, int players_pipes[][2], int player_count, int * max_fd) {
+void init_players(game_t *game, int players_pipes[][2], int player_count, int * max_fd) {
   *max_fd = 0;
   for (int i = 0; i < player_count; i++) {
     char name[] = {'P', 'l', 'a', 'y', 'e', 'r', '_', '0' + i, '\0'};
@@ -77,22 +93,21 @@ void player_pos(game_t *game) {
     game->players[0].y = game->height / 2;
     game->board[game->players[0].y * game->width + game->players[0].x] = 0;
   } else {
-    for (int i = 0; i < game->player_count; i++) {
+    for (unsigned int i = 0; i < game->player_count; i++) {
       double theta = (2.0 * M_PI * i) / game->player_count;
 
       game->players[i].x = (unsigned short)((game->width / 2) + b * cos(theta));
       game->players[i].y =
           (unsigned short)((game->height / 2) + a * sin(theta));
 
-      if (game->players[i].x >= 0 && game->players[i].x < game->width &&
-          game->players[i].y >= 0 && game->players[i].y < game->height) {
+      if (game->players[i].x < game->width && game->players[i].y < game->height) {
         game->board[game->players[i].y * game->width + game->players[i].x] = -i;
       }
     }
   }
 }
 
-close_not_needed_fds(int players_fds[][2], int player_count,
+void close_not_needed_fds(int players_fds[][2], int player_count,
                      int current_player) {
   for (int i = 0; i < player_count; i++) {
     if (i == current_player) {
@@ -119,21 +134,85 @@ void game_over(game_t *game, sync_t *sync) {
 }
 
 
-void receive_move(game_t * game, sync_t * sync, fd_set * read_fds, fd_set * active_fds, int players_fds[][2], char * finished, time_t * last_valid_move_time, int timeout){
-  if(time(NULL) - *last_valid_move_time < timeout) {
-    for (int i=0; i<game->player_count; i++) {
-      sem_post_check(&sync->players_ready[i]);
-      if ()
-    }
-  }
-}
-
-int game_ended(game_t * game, int player_count) {
+int game_ended(game_t * game) {
   int ended = 1;
-  for (int i=0; i < game->player_count && ended; i++) {
+  for (unsigned int i=0; i < game->player_count && ended; i++) {
     if (!game->players[i].blocked) {
       ended = 0;
     }
   }
   return ended;
+}
+
+
+//Que solo recive
+// Devuelve -1 si EOF/error, 0 si inválido, 1 si válido
+int receive_move(int fd, unsigned char *dir) {
+    ssize_t n = read(fd, dir, 1);
+    if (n == 0) {
+        // EOF
+        return -1;
+    } else if (n < 0) {
+        perror("read");
+        return -1;
+    }
+
+    return 1; // Dirección leída correctamente
+}
+
+
+//para ejecutar
+bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
+    sem_wait_check(&sync->writer_mutex);
+    sem_wait_check(&sync->state_mutex);
+    sem_post_check(&sync->writer_mutex); 
+
+    bool valid = false;
+
+    if(dir > 7){
+        printf("Jugador %s mandó dirección inválida\n", game->players[turno].name);
+        game->players[turno].invalid_requests++;
+    }else{
+      int dx = directions[dir][0];
+      int dy = directions[dir][1];
+      int new_x = game->players[turno].x + dx;
+      int new_y = game->players[turno].y + dy;
+  
+      if (!is_valid_move(new_x, new_y, game)) {
+          printf("Jugador %s movimiento inválido a (%d,%d)\n",
+                 game->players[turno].name, new_x, new_y);
+          game->players[turno].invalid_requests++;
+      } else {
+          int cell_value = game->board[new_y * game->width + new_x];
+          game->players[turno].score += cell_value;
+  
+          game->board[new_y * game->width + new_x] = -turno; // capturar celda
+          game->players[turno].x = new_x;
+          game->players[turno].y = new_y;
+          game->players[turno].valid_requests++;
+  
+          printf("Jugador %s se movió a (%d,%d), puntaje=%u\n",
+                 game->players[turno].name, new_x, new_y,
+                 game->players[turno].score);
+  
+          valid = true;
+      }
+    }
+    sem_post_check(&sync->state_mutex);
+    // sem_post_check(&sync->writer_mutex);
+
+    return valid;
+}
+
+void close_sems(sync_t *sync, unsigned int player_count){
+
+    for (unsigned int i = 0; i < player_count; i++) {
+        sem_destroy_check(&sync->players_ready[i]);
+    }
+
+    sem_destroy_check(&sync->master_to_view);
+    sem_destroy_check(&sync->view_to_master); 
+    sem_destroy_check(&sync->writer_mutex);
+    sem_destroy_check(&sync->state_mutex);
+    sem_destroy_check(&sync->readers_mutex);
 }

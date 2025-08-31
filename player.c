@@ -10,8 +10,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  game_t *game = open_game_memory();
-  sync_t *sync = open_sync_memory();
+  game_t *game = open_game_memory(sizeof(game_t) + (atoi(argv[1]) * atoi(argv[2]) * sizeof(int)));
+  sync_t *sync = open_sync_memory(sizeof(sync_t));
 
   unsigned int player_id = 0;
   int pid_p = getpid();
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     }
 
     unsigned char move = choose_move(
-        player_id); // Esto está en el lugar incorrecto. Estamos eligiendo el
+        player_id, game); // Esto está en el lugar incorrecto. Estamos eligiendo el
                     // movimiento antes de liberar el mutex del juego. Acá sólo
                     // se debería consultar el estado y no elegir el movimiento
 
@@ -94,8 +94,7 @@ int main(int argc, char *argv[]) {
 
 // Función para elegir el mejor movimiento basado en los valores de celdas
 // adyacentes
-unsigned char choose_move(unsigned int player_id) {
-  game_t *game = open_game_memory();
+unsigned char choose_move(unsigned int player_id, game_t * game) {
   int x = game->players[player_id].x;
   int y = game->players[player_id].y;
   int best_value = -1;

@@ -8,6 +8,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-unsigned char choose_move(unsigned int player_id);
+unsigned char choose_move(unsigned int player_id, game_t * game);
 
 #endif

@@ -42,8 +42,7 @@ void *create_memory(const char *name, size_t size) {
     err_exit("ftruncate");
   }
 
-  void *mem =
-      mmap(NULL, sizeof(size), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  void *mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if (mem == MAP_FAILED) {
     err_exit("mmap");
   }
@@ -51,12 +50,21 @@ void *create_memory(const char *name, size_t size) {
   return mem;
 }
 
-game_t *create_game_memory() {
-  return (game_t *)create_memory("/game_state", sizeof(game_t));
+game_t *create_game_memory(int size) {
+  return (game_t *)create_memory("/game_state", size);
 }
 
-sync_t *create_sync_memory() {
-  return (sync_t *)create_memory("/game_sync", sizeof(sync_t));
+sync_t *create_sync_memory(int size) {
+  return (sync_t *)create_memory("/game_sync", size);
+}
+
+void close_memory(void *mem, size_t size) {
+  if (munmap(mem, size) == -1) {
+    err_exit("munmap");
+  }
+  if(shm_unlink(mem) == -1){
+    err_exit("shm_unlink");
+  }
 }
 
 void sem_wait_check(sem_t *sem) {
@@ -68,5 +76,11 @@ void sem_wait_check(sem_t *sem) {
 void sem_post_check(sem_t *sem) {
   if (sem_post(sem) == -1) {
     err_exit("sem_post");
+  }
+}
+
+void sem_destroy_check(sem_t *sem) {
+  if (sem_destroy(sem) == -1) {
+    err_exit("sem_destroy");
   }
 }

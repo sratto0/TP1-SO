@@ -25,4 +25,12 @@ void sem_wait_check(sem_t *sem);
 
 void sem_post_check(sem_t *sem);
 
+void sem_destroy_check(sem_t *sem);
+
+game_t *create_game_memory(int size);
+
+sync_t *create_sync_memory(int size);
+
+void close_memory(void *mem, size_t size);
+
 #endif
