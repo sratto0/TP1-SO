@@ -24,13 +24,13 @@ int main(int argc, char *argv[]) {
 
   while (true) {
 
-    if (sem_wait(&sync->writer_lock) == -1) {
-      perror("sem_wait writer_lock");
+    if (sem_wait(&sync->writer_mutex) == -1) {
+      perror("sem_wait writer_mutex");
       break;
     }
 
-    if (sem_post(&sync->writer_lock) == -1) {
-      perror("sem_post writer_lock");
+    if (sem_post(&sync->writer_mutex) == -1) {
+      perror("sem_post writer_mutex");
       break;
     }
 
@@ -52,8 +52,8 @@ int main(int argc, char *argv[]) {
 
     sync->readers_count++;
     if (sync->readers_count == 1) {
-      if (sem_wait(&sync->state_lock) == -1) {
-        perror("sem_wait state_lock");
+      if (sem_wait(&sync->state_mutex) == -1) {
+        perror("sem_wait state_mutex");
         break;
       }
     }
@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
 
     sync->readers_count--;
     if (sync->readers_count == 0) {
-      if (sem_post(&sync->state_lock) == -1) {
-        perror("sem_post state_lock");
+      if (sem_post(&sync->state_mutex) == -1) {
+        perror("sem_post state_mutex");
         break;
       }
     }

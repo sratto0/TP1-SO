@@ -30,9 +30,9 @@ typedef struct {
   sem_t master_to_view; // El máster le indica a la vista que hay cambios por
                         // imprimir
   sem_t view_to_master; // La vista le indica al máster que terminó de imprimir
-  sem_t writer_lock;   // Mutex para evitar inanición del máster al acceder al
+  sem_t writer_mutex;   // Mutex para evitar inanición del máster al acceder al
                        // estado
-  sem_t state_lock;    // Mutex para el estado del juego
+  sem_t state_mutex;    // Mutex para el estado del juego
   sem_t readers_mutex; // Mutex para la siguiente variable
   unsigned int readers_count; // Cantidad de jugadores leyendo el estado
   sem_t players_ready[9];     // Le indican a cada jugador que puede enviar 1

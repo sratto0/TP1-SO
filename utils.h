@@ -17,8 +17,12 @@
     exit(EXIT_FAILURE);                                                        \
   } while (0);
 
-game_t *open_game_memory();
+game_t *open_game_memory(int size);
 
-sync_t *open_sync_memory();
+sync_t *open_sync_memory(int size);
+
+void sem_wait_check(sem_t *sem);
+
+void sem_post_check(sem_t *sem);
 
 #endif

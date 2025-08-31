@@ -332,3 +332,26 @@ make format
 make format
 make format
 make format
+man select_tut
+man 2 select
+man dup2
+man select
+man
+man read
+EXIT
+exit
+exit
+make format
+cd root
+make format
+cd ./..
+cd root
+exit
+man dup2
+man execve
+exit 
+man select
+exit
+man select
+man sem_init
+exit

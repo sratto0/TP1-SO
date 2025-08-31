@@ -24,12 +24,12 @@ void *open_memory(const char *name, size_t size, int flags) {
   return mem;
 }
 
-game_t *open_game_memory() {
-  return (game_t *)open_memory("/game_state", sizeof(game_t), O_RDONLY);
+game_t *open_game_memory(int size) {
+  return (game_t *)open_memory("/game_state", size, O_RDONLY);
 }
 
-sync_t *open_sync_memory() {
-  return (sync_t *)open_memory("/game_sync", sizeof(sync_t), O_RDWR);
+sync_t *open_sync_memory(int size) {
+  return (sync_t *)open_memory("/game_sync", size, O_RDWR);
 }
 
 void *create_memory(const char *name, size_t size) {
@@ -57,4 +57,16 @@ game_t *create_game_memory() {
 
 sync_t *create_sync_memory() {
   return (sync_t *)create_memory("/game_sync", sizeof(sync_t));
+}
+
+void sem_wait_check(sem_t *sem) {
+  if (sem_wait(sem) == -1) {
+    err_exit("sem_wait");
+  }
+}
+
+void sem_post_check(sem_t *sem) {
+  if (sem_post(sem) == -1) {
+    err_exit("sem_post");
+  }
 }

@@ -3,15 +3,17 @@
 
 #include "structs.h"
 #include "utils.h"
+#include <errno.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/select.h>
 #include <time.h>
-#include <errno.h>
+#include <unistd.h>
 
 #define MAX_DIGITS 15 // CHEQUEAR!!
 #define MAX_PLAYERS 9
+#define M_PI 3.14159265358979323846
 
 const int directions[8][2] = {
     {1, 0},   // right
