@@ -442,3 +442,10 @@ make
 ./master -p ./player -v ./view
 ./master -p ./player -v ./view
 exit
+make
+cd root
+make
+./master -p ./player -v ./view
+make
+./master -p ./player -v ./view
+exit

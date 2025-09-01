@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
             //otro fd_isset para que se ajuste a tener una receive y una execute
             if (FD_ISSET(players_fds[i][0], &read_fds)) {
 
-              sem_wait_check(&sync->players_ready[i]); 
+              sem_post_check(&sync->players_ready[i]); 
               
               unsigned char dir;
               int result = receive_move(players_fds[i][0], &dir);

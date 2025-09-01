@@ -23,7 +23,7 @@ void init_sync(sync_t *sync) {
   init_semaphore(&sync->state_mutex, 1);
   init_semaphore(&sync->readers_mutex, 1);
   for (int i = 0; i < MAX_PLAYERS; i++) {
-    init_semaphore(&sync->players_ready[i], 0);
+    init_semaphore(&sync->players_ready[i], 1);
   }
   sync->readers_count = 0;
 }
