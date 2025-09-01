@@ -407,3 +407,14 @@ make
 make analyze
 make analyze
 exit
+cd root
+./master -p ./player -v ./view
+make
+make
+./master -p ./player -v ./view
+exit
+git status
+exit
+ls
+exit
+exit
