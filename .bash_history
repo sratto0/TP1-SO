@@ -449,3 +449,12 @@ make
 make
 ./master -p ./player -v ./view
 exit
+cd root
+make clean
+make
+./master -p ./player -v ./view
+./master -p ./player -v ./view
+make
+make
+./master -p ./player -v ./view
+exit

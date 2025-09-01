@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
             perror("select");
             break;
         } else if (ready == 0) {
-            printf("Timeout: nadie movió\n");
+            //printf("Timeout: nadie movió\n");
             game_over(game, sync);
             break;
         }
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
               int result = receive_move(players_fds[i][0], &dir);
 
               if (result == -1) {
-                  printf("Jugador %s terminó (EOF)\n", game->players[i].name);
+                  //printf("Jugador %s terminó (EOF)\n", game->players[i].name);
                   game->players[i].blocked = true;
               } else {
                   bool moved = execute_move(game, sync, i, dir);

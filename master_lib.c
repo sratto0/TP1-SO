@@ -170,7 +170,6 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
     bool valid = false;
 
     if(dir > 7){
-        printf("Jugador %s mandó dirección inválida\n", game->players[turno].name);
         game->players[turno].invalid_requests++;
     }else{
       int dx = directions[dir][0];
@@ -179,8 +178,6 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
       int new_y = game->players[turno].y + dy;
   
       if (!is_valid_move(new_x, new_y, game)) {
-          printf("Jugador %s movimiento inválido a (%d,%d)\n",
-                 game->players[turno].name, new_x, new_y);
           game->players[turno].invalid_requests++;
       } else {
           int cell_value = game->board[new_y * game->width + new_x];
@@ -191,9 +188,6 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
           game->players[turno].y = new_y;
           game->players[turno].valid_requests++;
   
-          printf("Jugador %s se movió a (%d,%d), puntaje=%u\n",
-                 game->players[turno].name, new_x, new_y,
-                 game->players[turno].score);
   
           valid = true;
       }
