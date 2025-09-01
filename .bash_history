@@ -430,3 +430,15 @@ make
 ./master -p ./player -v ./view
 exit
 exit
+cd root
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+./master -p ./player -v ./view
+make
+./master -p ./player -v ./view
+make clena
+make clean
+make 
+./master -p ./player -v ./view
+./master -p ./player -v ./view
+exit
