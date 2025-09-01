@@ -418,3 +418,15 @@ exit
 ls
 exit
 exit
+./master -p ./player -v ./view
+cd root
+./master -p ./player -v ./view
+clean
+cd root
+make clean
+make 
+./master -p ./player -v ./view
+./master -p ./player -v ./view
+./master -p ./player -v ./view
+exit
+exit
