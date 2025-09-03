@@ -36,6 +36,7 @@ void game_over(game_t *game, sync_t *sync);
 int receive_move(int fd, unsigned char *dir);
 bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir);
 void player_pos(game_t *game);
+bool any_player_can_move(game_t *game);
 
 
 #endif

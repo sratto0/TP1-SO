@@ -240,12 +240,13 @@ int main(int argc, char *argv[]) {
     }
 
     print_board_ncurses(game);
-
+    
+    
     if (sem_post(&sync->view_to_master) == -1) {
       perror("sem_post view_to_master");
       break;
     }
-
+    
     if (game->finished) {
       mvprintw(LINES - 2, 0,
                "¡Juego terminado! Presiona cualquier tecla para salir...");
@@ -254,7 +255,6 @@ int main(int argc, char *argv[]) {
       getch();
       break;
     }
-
     napms(50);
   }
 

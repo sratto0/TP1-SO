@@ -5,14 +5,14 @@
 #include "master_lib.h"
 
 const int directions[8][2] = {
+    {0, -1},  // up
+    {1, -1},  // up-right
     {1, 0},   // right
     {1, 1},   // down-right
     {0, 1},   // down
     {-1, 1},  // down-left
     {-1, 0},  // left
-    {-1, -1}, // up-left
-    {0, -1},  // up
-    {1, -1}   // up-right
+    {-1, -1}  // up-left
 };
 
 
@@ -209,4 +209,21 @@ void close_sems(sync_t *sync, unsigned int player_count){
     sem_destroy_check(&sync->writer_mutex);
     sem_destroy_check(&sync->state_mutex);
     sem_destroy_check(&sync->readers_mutex);
+}
+
+bool any_player_can_move(game_t *game) {
+    for (unsigned int i = 0; i < game->player_count; i++) {
+        // Skip blocked players
+        if (game->players[i].blocked) {
+            continue;
+        }
+        
+        // Check if this player has any valid moves
+        if (has_valid_moves(game, &game->players[i])) {
+            return true;
+        }
+    }
+    
+    // No player can make a valid move
+    return false;
 }

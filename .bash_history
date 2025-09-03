@@ -458,3 +458,7 @@ make
 make
 ./master -p ./player -v ./view
 exit
+cd ./root
+make clean
+make
+./master -p ./player -v ./view

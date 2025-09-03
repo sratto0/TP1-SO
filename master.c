@@ -41,11 +41,12 @@ int main(int argc, char *argv[]) {
       view_path = optarg;
       break;
     case 'p':
-      // // primero con getopt habria que tener la cantidad de players
-      // players_paths[0] = "./player"; // hardcodeado para probarlo con 1 jugador
-      // break;
-      players_paths[player_count] = optarg;  // Usar optarg en lugar de hardcodear
-      player_count++;                       // Incrementar el contador
+      if (player_count < 9) {
+        players_paths[player_count++] = optarg;
+      }
+      while (optind < argc && player_count < 9 && argv[optind][0] != '-') {
+        players_paths[player_count++] = argv[optind++];
+      }
       break;
     default:
       fprintf(stderr, "Uso: %s [-w width] [-h height] [-v view]\n", argv[0]);
@@ -181,7 +182,7 @@ int main(int argc, char *argv[]) {
             //otro fd_isset para que se ajuste a tener una receive y una execute
             if (FD_ISSET(players_fds[i][0], &read_fds)) {
 
-              sem_post_check(&sync->players_ready[i]); 
+             // sem_post_check(&sync->players_ready[i]); 
               
               unsigned char dir;
               int result = receive_move(players_fds[i][0], &dir);
@@ -199,9 +200,20 @@ int main(int argc, char *argv[]) {
                       sem_wait_check(&sync->view_to_master);
 
                       usleep(delay * 1000);
+
+                      if (!any_player_can_move(game)) {
+                          printf("El juego ha terminado: ningún jugador puede moverse\n");
+                          game_over(game, sync);
+
+                          sem_post_check(&sync->master_to_view);
+                          sem_wait_check(&sync->view_to_master);
+                          
+                          break;
+                      }
                   }
+                  sem_post(&sync->players_ready[i]); // habilito jugador
               }
-              sem_post(&sync->players_ready[i]); // habilito jugador
+              
               last_served = (i + 1) % player_count;
               break; // solo un movimiento por ronda
           
@@ -209,6 +221,12 @@ int main(int argc, char *argv[]) {
             }
         }
     } //while
+
+    for (int i = 0; i < player_count; i++) {
+        if (game->players[i].process_id != 0) {
+            sem_post_check(&sync->players_ready[i]);
+        }
+    }
 
     int view_ret;
     if (view_path != NULL) {
@@ -227,10 +245,16 @@ int main(int argc, char *argv[]) {
       printf("El player %s devolvio el valor %d\n", game->players[i].name, status);
     }
 
+    printf("Antes de close_sems\n");
     close_sems(sync, game->player_count);
-    close_memory(game, sizeof(game_t) + (width * height * sizeof(int)));
-    close_memory(sync, sizeof(sync_t));
+
+    printf("Antes de close_memory sync\n");
+    close_memory("/game_sync", sync, sizeof(sync_t));
+    
+    printf("Antes de close_memory game\n");
+    close_memory("/game_state", game, sizeof(game_t) + (width * height * sizeof(int)));
+    
+    printf("Fin del programa\n");
     
     return 0;
 }
-

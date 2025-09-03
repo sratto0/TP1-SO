@@ -31,6 +31,6 @@ game_t *create_game_memory(int size);
 
 sync_t *create_sync_memory(int size);
 
-void close_memory(void *mem, size_t size);
+void close_memory(const char * name, void *mem, size_t size);
 
 #endif

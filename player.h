@@ -8,6 +8,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-unsigned char choose_move(unsigned int player_id, game_t * game);
-
+unsigned char choose_move(int local_board[8]);
+void get_state(game_t * game, unsigned int player_id, int local_board[8]) ;
 #endif
