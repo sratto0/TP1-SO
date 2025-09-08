@@ -232,24 +232,14 @@ int main(int argc, char *argv[]) {
   nodelay(stdscr, TRUE);
 
   while (true) {
-    if (sem_wait(&sync->master_to_view) == -1) {
-      if (errno == EINTR)
-        continue;
-      perror("sem_wait master_to_view");
-      break;
-    }
+    sem_wait_check(&sync->master_to_view);
 
     print_board_ncurses(game);
     
-    
-    if (sem_post(&sync->view_to_master) == -1) {
-      perror("sem_post view_to_master");
-      break;
-    }
+    sem_post_check(&sync->view_to_master); 
     
     if (game->finished) {
-      mvprintw(LINES - 2, 0,
-               "¡Juego terminado! Presiona cualquier tecla para salir...");
+      mvprintw(LINES - 2, 0, "¡Juego terminado! Presiona cualquier tecla para salir...");
       refresh();
       nodelay(stdscr, FALSE);
       getch();

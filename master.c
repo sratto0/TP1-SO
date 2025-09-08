@@ -12,13 +12,10 @@ int main(int argc, char *argv[]) {
 
   int opt;
   char *view_path = NULL;
-  unsigned int delay = 200;
-  unsigned int timeout = 10;
-  unsigned int seed = time(NULL);
+  unsigned int delay = 200, timeout = 10, seed = time(NULL);
   char *players_paths[9] = {NULL};
   int player_count = 0;
-  unsigned short width = 20;
-  unsigned short height = 10;
+  unsigned short width = 20, height = 10;
 
   while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p:")) != -1) {
     switch (opt) {
@@ -216,8 +213,6 @@ int main(int argc, char *argv[]) {
               
               last_served = (i + 1) % player_count;
               break; // solo un movimiento por ronda
-          
-
             }
         }
     } //while
@@ -231,7 +226,6 @@ int main(int argc, char *argv[]) {
     int view_ret;
     if (view_path != NULL) {
       waitpid(view_pid, &view_ret, 0);
-      printf("El view (%s) devolvio el valor %d\n", view_path, view_ret);
     }
 
     for (int i = 0; i < player_count; i++) {
@@ -242,19 +236,13 @@ int main(int argc, char *argv[]) {
       }else {
         status = 256;
       }
-      printf("El player %s devolvio el valor %d\n", game->players[i].name, status);
     }
 
-    printf("Antes de close_sems\n");
     close_sems(sync, game->player_count);
 
-    printf("Antes de close_memory sync\n");
     close_memory("/game_sync", sync, sizeof(sync_t));
     
-    printf("Antes de close_memory game\n");
     close_memory("/game_state", game, sizeof(game_t) + (width * height * sizeof(int)));
-    
-    printf("Fin del programa\n");
     
     return 0;
 }
