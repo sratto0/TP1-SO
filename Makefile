@@ -18,7 +18,7 @@ PVS_REPORT = plog-converter
 VALGRIND = valgrind --leak-check=full
 
 
-all: deps player master view
+all: clean deps player master view
 
 # all: deps view player
 

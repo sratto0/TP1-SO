@@ -27,7 +27,6 @@ bool has_valid_moves(game_t *game, player_t *player);
 bool is_valid_move(int x, int y, game_t *game);
 void fill_board(game_t *game);
 void init_players(game_t * game, int players_fds[][2], int player_count, int *max_fd);
-void init_semaphores(sync_t *sync);
 void close_sems(sync_t *sync, unsigned int player_count);
 void close_not_needed_fds(int players_fds[][2], int player_count, int current_player);
 void safe_close(int fd);
@@ -37,6 +36,11 @@ int receive_move(int fd, unsigned char *dir);
 bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir);
 void player_pos(game_t *game);
 bool any_player_can_move(game_t *game);
-
+void get_arguments(int argc, char * argv[], unsigned short * width, unsigned short * height, unsigned int * delay, unsigned int * timeout, unsigned int * seed, char ** view_path, char ** players_paths, int * player_count);
+void print_configuration(unsigned short width, unsigned short height, unsigned int delay, unsigned int timeout, unsigned int seed, char * view_path, char ** players_paths, int player_count);
+void create_view(char * path, char * width, char * height, pid_t * pid);
+void create_players(char ** paths, int fds[][2], char * width, char * height, int player_count, game_t * game);
+void process_players(game_t *game, sync_t *sync, int player_count, int players_fds[][2], fd_set read_fds, int *last_served, time_t *last_move_time, unsigned int delay);
+void sync_with_view(sync_t *sync, unsigned int delay);
 
 #endif

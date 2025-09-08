@@ -20,6 +20,8 @@
     exit(EXIT_FAILURE);                                                        \
   } while (0);
 
+#define err_msg(msg) do { fprintf(stderr, "%s\n", msg); exit(EXIT_FAILURE); } while (0)
+
 game_t *open_game_memory(int size);
 
 sync_t *open_sync_memory(int size);

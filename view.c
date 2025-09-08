@@ -198,7 +198,7 @@ void print_board_ncurses(game_t *game) {
 int main(int argc, char *argv[]) {
 
   if (argc != 3) {
-    printf("Uso: %s <width> <height>\n", argv[0]);
+    printf("Using: %s <width> <height>\n", argv[0]);
     return 1;
   }
   
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
 
   if (!has_colors()) {
     endwin();
-    printf("Tu terminal no soporta colores.\n");
+    printf("Your terminal does not support colors.\n");
     exit(1);
   }
 
@@ -239,7 +239,7 @@ int main(int argc, char *argv[]) {
     sem_post_check(&sync->view_to_master); 
     
     if (game->finished) {
-      mvprintw(LINES - 2, 0, "¡Juego terminado! Presiona cualquier tecla para salir...");
+      mvprintw(LINES - 2, 0, "Game over! Press any key to exit...");
       refresh();
       nodelay(stdscr, FALSE);
       getch();

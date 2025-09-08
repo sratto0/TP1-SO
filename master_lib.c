@@ -227,3 +227,137 @@ bool any_player_can_move(game_t *game) {
     // No player can make a valid move
     return false;
 }
+
+void get_arguments(int argc, char *argv[], unsigned short * width, unsigned short * height, unsigned int * delay, unsigned int * timeout, unsigned int * seed, char ** view_path, char ** players_paths, int * player_count){
+  int opt;
+
+  while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p:")) != -1) {
+    switch (opt) {
+    case 'w':
+      *width = atoi(optarg);
+      break;
+    case 'h':
+      *height = atoi(optarg);
+      break;
+    case 'd':
+      *delay = atoi(optarg);
+      break;
+    case 't':
+      *timeout = atoi(optarg);
+      break;
+    case 's':
+      *seed = atoi(optarg);
+      break;
+    case 'v':
+      *view_path = optarg;
+      break;
+    case 'p':
+      if (*player_count < 9) {
+        players_paths[(*player_count)++] = optarg;
+      }
+      while (optind < argc && argv[optind][0] != '-') {
+        players_paths[(*player_count)++] = argv[optind++];
+      }
+      break;
+    default:
+      fprintf(stderr, "Using: %s [-w width] [-h height] [-v view]\n", argv[0]);
+      exit(EXIT_FAILURE);
+      break;
+    }
+  }
+}
+
+
+void print_configuration(unsigned short width, unsigned short height, unsigned int delay, unsigned int timeout, unsigned int seed, char * view_path, char ** players_paths, int player_count){
+  printf("width = %d\nheight = %d\ndelay = %dms\ntimeout = %ds\nseed=%d\nview "
+         "= %s\nplayers:\n",
+         width, height, delay, timeout, seed,
+         view_path != NULL ? view_path : " - ");
+
+  for (int i = 0; i < player_count; i++) {
+    printf("  %s\n", players_paths[i]);
+  }
+}
+
+void create_view(char* path, char * width, char * height, pid_t * pid) {
+  if (path != NULL) {
+    if (access(path, X_OK) == 0) {
+      *pid = fork();
+      if (*pid == -1) {
+        err_exit("Fork error");
+      } else if (*pid == 0) {
+        char * argv[] = {path, width, height, NULL};
+        if (execve(path, argv, NULL) == -1) {
+          err_exit("Execve error");
+        }
+      }
+    } else {
+      printf("View path is not executable or does not exist\n");
+      path = NULL;
+    }
+  }
+}
+
+void create_players(char ** paths, int fds[][2], char * width, char * height, int player_count, game_t * game) {
+  for (int i = 0; i < player_count; i++) {
+    if (access(paths[i], X_OK) == 0) {
+      pid_t pid = fork();
+      if (pid == -1) {
+        err_exit("Fork error");
+      } else if (pid == 0) {
+        close_not_needed_fds(fds, player_count, i);
+        if (dup2(fds[i][1], STDOUT_FILENO) == -1) {
+          err_exit("Dup2 error");
+        }
+        safe_close(fds[i][1]);
+        char *argv[] = {paths[i], width, height, NULL};
+        if (execve(argv[0], argv, NULL) == -1) {
+          err_exit("Execve error");
+        }
+      } else {
+        game->players[i].process_id = pid;
+      }
+    } else {
+      game->players[i].process_id = 0;
+    }
+  }
+}
+
+void process_players(game_t *game, sync_t *sync, int player_count, int players_fds[][2], fd_set read_fds, int *last_served, time_t *last_move_time, unsigned int delay) {
+  for (int j = 0; j < player_count; j++) {
+    int i = (*last_served + j) % player_count;
+
+    if (FD_ISSET(players_fds[i][0], &read_fds)) {
+      unsigned char dir;
+      int result = receive_move(players_fds[i][0], &dir);
+
+      if (result == -1) {
+        game->players[i].blocked = true;
+      } else {
+        bool moved = execute_move(game, sync, i, dir);
+        if (moved) {
+          *last_move_time = time(NULL);
+
+          sync_with_view(sync, delay);
+
+          if (!any_player_can_move(game)) {
+            printf("The game has ended: no player can move\n");
+            game_over(game, sync);
+            sync_with_view(sync, delay);        
+            break;
+          }
+        }
+        sem_post_check(&sync->players_ready[i]); // habilito jugador
+      }
+              
+      *last_served = (i + 1) % player_count;
+      break; // solo un movimiento por ronda
+    }
+  }
+}
+
+void sync_with_view(sync_t *sync, unsigned int delay){
+  sem_post_check(&sync->master_to_view);
+  sem_wait_check(&sync->view_to_master);
+  usleep(delay * 1000);
+}

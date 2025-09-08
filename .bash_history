@@ -1,44 +1,3 @@
-./ChompChamps -p sofi -v ./view
-exit
-./ChompChamps -p sofi -v ./view
-cd ./root
-./ChompChamps -p sofi -v ./view
-exit
-./ChompChamps -p sofi -v ./view
-exit
-exit
-cd root
-./ChompChamps -p sofi -v ./view
-cd rootex
-exit
-exit
-cd root
-./ChompChamps -p sofi -v ./view
-exit
-cd root
-make
-make all
-exit
-make format
-make format
-cd ./root
-make format
-install clang-format
-exit
-make
-cd root
-make
-./ChompChamps -p sofi -v ./view
-./ChompChamps -p ./player -v ./view
-./ChompChamps -p ./player ./player -v ./view
-./ChompChamps -p ./player -v ./view
-strace -f ./ChompChamps -p ./player -v ./view
-make
-make
-apt-get update
-apt-get install -y libncurses5-dev libncursesw5-dev
-make
-./ChompChamps -p ./player -v ./view
 make
 ./ChompChamps -p ./player -v ./view
 make
@@ -498,3 +457,44 @@ make clean
 make
 ./master -p ./player -v ./view
 ./master -p ./player ./player ./player -v ./view
+cd root
+make clean
+make
+make
+./master -p ./player -v ./view
+make clean
+make
+./master -p ./player -v ./view
+./master -p ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player ./player ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player -v ./view
+make clean
+make
+make clean
+make
+make
+make
+make
+make
+make
+./master -p ./player ./player -v ./view
+./master -p ./player ./player -v ./view
+./master -p ./player ./player -v ./view -w 30
+./master -p ./player ./player -v ./view -w 30 -h 40
+./master -p ./player ./player -v ./view -w 30 -h 40
