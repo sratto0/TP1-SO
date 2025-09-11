@@ -249,5 +249,7 @@ int main(int argc, char *argv[]) {
   }
 
   endwin();
+  close_memory("/game_state", game, sizeof(game_t) + (atoi(argv[1]) * atoi(argv[2]) * sizeof(int)), OPEN);
+  close_memory("/game_sync", sync, sizeof(sync_t), OPEN);
   return 0;
 }

@@ -8,7 +8,7 @@ LDFLAGS = -lm -lncurses -lrt -pthread
 # CFLAGS = -std=gnu99 -Wall -Werror -g -Wextra -fsanitize=address -Iinclude
 
 
-OBJS_PLAYER = player.o utils.o
+OBJS_PLAYER = player.o player_lib.o utils.o
 OBJS_VIEW = view.o utils.o
 OBJS_MASTER = master.o master_lib.o utils.o
 

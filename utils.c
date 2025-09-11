@@ -48,11 +48,11 @@ sync_t *create_sync_memory(int size) {
   return (sync_t *)memory_manager("/game_sync", size, O_CREAT | O_RDWR, CREATE);
 }
 
-void close_memory(const char * name, void *mem, size_t size) {
+void close_memory(const char * name, void *mem, size_t size, char unlink_shm) {
   if (munmap(mem, size) == -1) {
     err_exit("munmap");
   }
-  if(shm_unlink(name) == -1){
+  if(unlink_shm && shm_unlink(name) == -1){
     err_exit("shm_unlink");
   }
 }

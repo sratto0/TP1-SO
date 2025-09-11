@@ -117,8 +117,8 @@ int main(int argc, char *argv[]) {
     }
 
     close_sems(sync, game->player_count);
-    close_memory("/game_sync", sync, sizeof(sync_t));
-    close_memory("/game_state", game, sizeof(game_t) + (width * height * sizeof(int)));
+    close_memory("/game_sync", sync, sizeof(sync_t), CREATE);
+    close_memory("/game_state", game, sizeof(game_t) + (width * height * sizeof(int)), CREATE);
     
     return 0;
 }

@@ -1,47 +1,3 @@
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-./ChompChamps -p ./player -v ./view
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-./ChompChamps -p ./player ./player -v ./view
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
 ./ChompChamps -p ./player -v ./view
 make
 ./ChompChamps -p ./player 0 -v ./view
@@ -498,3 +454,47 @@ make
 ./master -p ./player ./player -v ./view -w 30
 ./master -p ./player ./player -v ./view -w 30 -h 40
 ./master -p ./player ./player -v ./view -w 30 -h 40
+make clean
+cd root
+make clean
+make
+./master -p ./player ./player -v ./view
+./master -p ./player ./player -v ./view
+make clean
+make
+make
+make
+make
+make
+make
+make
+make
+./master -p ./player ./player -v ./view
+make clean
+make 
+make clean
+make 
+make 
+make 
+make 
+./master -p ./player ./player -v ./view
+make clean
+make 
+./master -p ./player ./player -v ./view
+./master -p ./player  -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master
+make
+./master -v ./view
+./master_arm/ChompChamps -p ./player -v ./view

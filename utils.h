@@ -36,6 +36,6 @@ void sem_post_check(sem_t *sem);
 
 void sem_destroy_check(sem_t *sem);
 
-void close_memory(const char * name, void *mem, size_t size);
+void close_memory(const char * name, void *mem, size_t size, char unlink_shm);
 
 #endif
