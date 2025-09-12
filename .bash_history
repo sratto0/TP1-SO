@@ -1,53 +1,3 @@
-man dup2
-man select
-man
-man read
-EXIT
-exit
-exit
-make format
-cd root
-make format
-cd ./..
-cd root
-exit
-man dup2
-man execve
-exit 
-man select
-exit
-man select
-man sem_init
-exit
-cd root
-make
-make
-make
-make
-make
-make
-exit
-cd root
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
 make
 make
 make
@@ -497,4 +447,54 @@ exit
 cd root
 make valgrind_master
 make analyze
+exit
+cd root
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make analyze
+make analyze
+make clean
+make analyze
+make analyze
+make analyze
+make valgrind master
+make analyze
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+make analyze
+make valgrind_master
+clear
+make valgrind_master
+make valgrind_master
+make
+make valgrind_master
+make
+make valgrind_master
+make valgrind_master
+make clean
 exit

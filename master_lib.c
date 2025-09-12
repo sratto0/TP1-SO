@@ -19,10 +19,18 @@ void get_arguments(int argc, char *argv[], unsigned short *width,
   while ((opt = getopt(argc, argv, "w:h:d:t:s:v:p:")) != -1) {
     switch (opt) {
     case 'w':
-      *width = atoi(optarg);
+      unsigned short w = atoi(optarg);
+      if(w<10) {
+        err_msg("Minimal board width: 10x10");
+      }
+      *width = w;
       break;
     case 'h':
-      *height = atoi(optarg);
+      unsigned short h = atoi(optarg);
+      if(h<10) {
+        err_msg("Minimal board height: 10");
+      }
+      *height = h;
       break;
     case 'd':
       *delay = atoi(optarg);
