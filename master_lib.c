@@ -60,7 +60,7 @@ void check_player_count(int count) {
 
 void init_sync(sync_t *sync) {
   init_semaphore(&sync->have_to_print, 0);
-  init_semaphore(&sync->finished_printing, 1);
+  init_semaphore(&sync->finished_printing, 0);
   init_semaphore(&sync->writer_mutex, 1);
   init_semaphore(&sync->state_mutex, 1);
   init_semaphore(&sync->readers_count_mutex, 1);
@@ -280,11 +280,13 @@ void process_players(game_t *game, sync_t *sync, int player_count,
             break;
           }
         }
-        sem_post_check(&sync->players_ready[i]); 
+        if(!game->players[i].blocked){
+          sem_post_check(&sync->players_ready[i]); 
+        }
       }
 
       *last_served = (i + 1) % player_count;
-      break; 
+      break;  
     }
   }
 }
@@ -331,6 +333,13 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
       valid = true;
     }
   }
+
+  for (unsigned int i = 0; i < game->player_count; i++) {
+    if (!game->players[i].blocked && !has_valid_moves(game, &game->players[i])) {
+      game->players[i].blocked = true;
+    }
+  }
+
   sem_post_check(&sync->state_mutex);
 
   return valid;

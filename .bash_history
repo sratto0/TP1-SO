@@ -1,39 +1,3 @@
-make
-make
-make clean
-make
-make analyze
-make valgrind_player
-make valgrind_player
-make valgrind_view
-make valgrind_view -s
-make valgrind_view
-make clean
-make valgrind_view
-make clean
-make 
-make valgrind_view
-make clean
-make valgrind_view
-make analyze
-make valgrind_view
-make valgrind_player
-make valgrind_player
-make analyze
-make analyze
-make valgrind_player
-cat PVS-Studio.log
-make valgrind_player
-make analyze
-make analyze
-make analyze
-make analyze(int)(i + 1)
-make analyze
-make analyze
-make valgrind_player
-make clean
-make
-make valgrind_player
 man 2 pipe
 man 7 pipe
 man 2 pipe
@@ -497,4 +461,40 @@ make
 ./master -p ./player ./player ./player ./player ./player ./player -v ./view
 ./master -p ./player ./player ./player ./player ./player ./player -v ./view -d 3000
 ./master -p ./player ./player ./player ./player ./player ./player -v ./view -w 30
+exit
+cd root
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+exit
+cd root
+make clean
+make
+./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+cd root
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view -w 20 -h 20
+./master -p ./player ./player ./player ./player ./player ./player -v ./view -w 20 -h 20
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+cd root
+./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+cd root
+./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+cd root
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make clean
+make
+./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
 exit

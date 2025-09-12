@@ -9,7 +9,7 @@ LDFLAGS = -lm -lncurses -lrt -pthread
 
 
 OBJS_PLAYER = player.o player_lib.o utils.o
-OBJS_VIEW = view.o utils.o
+OBJS_VIEW = view.o view_lib.o utils.o
 OBJS_MASTER = master.o master_lib.o utils.o
 
 PVS_ANALYZER = pvs-studio-analyzer
