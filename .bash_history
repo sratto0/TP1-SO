@@ -1,47 +1,3 @@
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make
-make clean
-make
-make
-make
-make
-make
-./master -p ./player -v ./view
-make analyze
-make analyze
-exit
-cd root
-./master -p ./player -v ./view
-make
-make
-./master -p ./player -v ./view
-exit
-git status
-exit
-ls
-exit
-exit
-./master -p ./player -v ./view
-cd root
-./master -p ./player -v ./view
-clean
-cd root
-make clean
-make 
-./master -p ./player -v ./view
-./master -p ./player -v ./view
-./master -p ./player -v ./view
 exit
 exit
 cd root
@@ -497,4 +453,48 @@ make
 make valgrind_master
 make valgrind_master
 make clean
+exit
+make valgrind_master
+cd root
+./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+./master_amd/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+cd root
+make
+./master_amd/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+./master_amd/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view -w 31 -h 31
+./master_amd/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view -w 31 -h 31
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 31 -h 31
+make
+make clean
+make 
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 31 -h 31
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view 
+make format
+[200~apt-get update
+[200~apt-get update
+exit
+cd root
+apt-get update
+apt-get install -y clang-format
+make format
+make format
+make format
+exit
+cd root
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -h 4
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
+make clean
+make clean
+make 
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
+exit
+cd root
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
+mkae
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
 exit

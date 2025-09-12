@@ -5,9 +5,7 @@
 #include "view_lib.h"
 #include <ncurses.h>
 
-int get_player_color(int player_id) {
-    return COLOR_PAIR_PLAYER0 + player_id;
-}
+int get_player_color(int player_id) { return COLOR_PAIR_PLAYER0 + player_id; }
 
 void define_color_pairs() {
   init_pair(COLOR_PAIR_BOARD, COLOR_WHITE, COLOR_BLACK);
@@ -78,9 +76,9 @@ void print_board_ncurses(game_t *game) {
       } else if (cell_value < 0) {
         int player_id = -cell_value;
         attron(COLOR_PAIR(get_player_color(player_id)));
-        mvprintw(row_y, cell_x, "%d", (player_id)*-1);
+        mvprintw(row_y, cell_x, "%d", (player_id) * -1);
         attroff(COLOR_PAIR(get_player_color(player_id)));
-      } else if(cell_value == 0) {
+      } else if (cell_value == 0) {
         attron(COLOR_PAIR(get_player_color(0)));
         mvprintw(row_y, cell_x, " 0");
         attroff(COLOR_PAIR(get_player_color(0)));
@@ -98,7 +96,7 @@ void print_board_ncurses(game_t *game) {
       int sep_y = row_y + 1;
       attron(COLOR_PAIR(COLOR_PAIR_BOARD));
       mvaddch(sep_y, board_start_x, ACS_LTEE);
-      
+
       for (int j = 0; j < game->width; j++) {
         for (int k = 0; k < 3; k++) {
           mvaddch(sep_y, board_start_x + 1 + j * 4 + k, ACS_HLINE);
@@ -107,7 +105,7 @@ void print_board_ncurses(game_t *game) {
           mvaddch(sep_y, board_start_x + 4 + j * 4, ACS_PLUS);
         }
       }
-      
+
       mvaddch(sep_y, board_start_x + board_width - 1, ACS_RTEE);
       attroff(COLOR_PAIR(COLOR_PAIR_BOARD));
     }
@@ -133,37 +131,35 @@ void print_board_ncurses(game_t *game) {
 }
 
 void print_scoreboard(game_t *game, int start_y) {
-    int score_start_x = 2;
-    
-    attron(COLOR_PAIR(COLOR_PAIR_TITLE) | A_BOLD);
-    mvprintw(start_y, score_start_x, "=== SCOREBOARD ===");
-    attroff(COLOR_PAIR(COLOR_PAIR_TITLE) | A_BOLD);
-    
-    for (unsigned int i = 0; i < game->player_count; i++) {
-        int y = start_y + 2 + i;
-        
-        attron(COLOR_PAIR(get_player_color(i)) | A_BOLD);
-        mvprintw(y, score_start_x, "P%u", i);
-        attroff(COLOR_PAIR(get_player_color(i)) | A_BOLD);
-        
-        attron(COLOR_PAIR(COLOR_PAIR_INFO));
-        mvprintw(y, score_start_x + 4, "Score: %3u  Valid: %2u  Invalid: %2u  [%s]",
-                 game->players[i].score,
-                 game->players[i].valid_requests,
-                 game->players[i].invalid_requests,
-                 game->players[i].blocked ? "BLOCKED" : "ACTIVE");
-        attroff(COLOR_PAIR(COLOR_PAIR_INFO));
-    }
-    
+  int score_start_x = 2;
+
+  attron(COLOR_PAIR(COLOR_PAIR_TITLE) | A_BOLD);
+  mvprintw(start_y, score_start_x, "=== SCOREBOARD ===");
+  attroff(COLOR_PAIR(COLOR_PAIR_TITLE) | A_BOLD);
+
+  for (unsigned int i = 0; i < game->player_count; i++) {
+    int y = start_y + 2 + i;
+
+    attron(COLOR_PAIR(get_player_color(i)) | A_BOLD);
+    mvprintw(y, score_start_x, "P%u", i);
+    attroff(COLOR_PAIR(get_player_color(i)) | A_BOLD);
+
     attron(COLOR_PAIR(COLOR_PAIR_INFO));
-    mvprintw(start_y + game->player_count + 4, score_start_x, 
-             "Board: %hux%hu  |  Status: %s", 
-             game->width, game->height,
-             game->finished ? "FINISHED" : "PLAYING");
+    mvprintw(y, score_start_x + 4, "Score: %3u  Valid: %2u  Invalid: %2u  [%s]",
+             game->players[i].score, game->players[i].valid_requests,
+             game->players[i].invalid_requests,
+             game->players[i].blocked ? "BLOCKED" : "ACTIVE");
     attroff(COLOR_PAIR(COLOR_PAIR_INFO));
+  }
+
+  attron(COLOR_PAIR(COLOR_PAIR_INFO));
+  mvprintw(start_y + game->player_count + 4, score_start_x,
+           "Board: %hux%hu  |  Status: %s", game->width, game->height,
+           game->finished ? "FINISHED" : "PLAYING");
+  attroff(COLOR_PAIR(COLOR_PAIR_INFO));
 }
 
-void terminal_color_check(){
+void terminal_color_check() {
   if (!has_colors()) {
     endwin();
     printf("Your terminal does not support colors.\n");

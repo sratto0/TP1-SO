@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
   char argv_width[MAX_DIGITS] = {0};
   char argv_height[MAX_DIGITS] = {0};
-  
+
   sprintf(argv_width, "%d", game->width);
   sprintf(argv_height, "%d", game->height);
 

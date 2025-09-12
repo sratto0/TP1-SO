@@ -20,14 +20,14 @@ void get_arguments(int argc, char *argv[], unsigned short *width,
     switch (opt) {
     case 'w':
       unsigned short w = atoi(optarg);
-      if(w<10) {
-        err_msg("Minimal board width: 10x10");
+      if (w < 10) {
+        err_msg("Minimal board width: 10");
       }
       *width = w;
       break;
     case 'h':
       unsigned short h = atoi(optarg);
-      if(h<10) {
+      if (h < 10) {
         err_msg("Minimal board height: 10");
       }
       *height = h;
@@ -102,10 +102,11 @@ void print_configuration(unsigned short width, unsigned short height,
                          unsigned int delay, unsigned int timeout,
                          unsigned int seed, char *view_path,
                          char **players_paths, int player_count) {
-  printf("width = %hu\nheight = %hu\ndelay = %ums\ntimeout = %us\nseed=%u\nview "
-         "= %s\nplayers:\n",
-         width, height, delay, timeout, seed,
-         view_path != NULL ? view_path : " - ");
+  printf(
+      "width = %hu\nheight = %hu\ndelay = %ums\ntimeout = %us\nseed=%u\nview "
+      "= %s\nplayers:\n",
+      width, height, delay, timeout, seed,
+      view_path != NULL ? view_path : " - ");
 
   for (int i = 0; i < player_count; i++) {
     printf("  %s\n", players_paths[i]);
@@ -153,8 +154,8 @@ void init_players_data_and_pipes(game_t *game, int players_pipes[][2],
 }
 
 void player_pos(game_t *game) {
-  unsigned short a = (game->height / 2) * 0.7; 
-  unsigned short b = (game->width / 2) * 0.7;  
+  unsigned short a = (game->height / 2) * 0.7;
+  unsigned short b = (game->width / 2) * 0.7;
 
   if (game->player_count == 1) {
     game->players[0].x = game->width / 2;
@@ -288,13 +289,13 @@ void process_players(game_t *game, sync_t *sync, int player_count,
             break;
           }
         }
-        if(!game->players[i].blocked){
-          sem_post_check(&sync->players_ready[i]); 
+        if (!game->players[i].blocked) {
+          sem_post_check(&sync->players_ready[i]);
         }
       }
 
       *last_served = (i + 1) % player_count;
-      break;  
+      break;
     }
   }
 }
@@ -343,7 +344,8 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
   }
 
   for (unsigned int i = 0; i < game->player_count; i++) {
-    if (!game->players[i].blocked && !has_valid_moves(game, &game->players[i])) {
+    if (!game->players[i].blocked &&
+        !has_valid_moves(game, &game->players[i])) {
       game->players[i].blocked = true;
     }
   }

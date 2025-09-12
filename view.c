@@ -6,7 +6,6 @@
 #include <ncurses.h>
 #include <unistd.h>
 
-
 int main(int argc, char *argv[]) {
 
   if (argc != 3) {
@@ -30,18 +29,18 @@ int main(int argc, char *argv[]) {
     sem_wait_check(&sync->have_to_print);
 
     print_board_ncurses(game);
-    
+
     if (game->finished) {
       mvprintw(LINES - 2, 0, "Game over! Press any key to exit...");
       refresh();
-      sem_post_check(&sync->finished_printing);  
+      sem_post_check(&sync->finished_printing);
       nodelay(stdscr, FALSE);
       getch();
       break;
     }
-    
+
     sem_post_check(&sync->finished_printing);
-    
+
     napms(50);
   }
 
