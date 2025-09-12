@@ -18,21 +18,9 @@ int main(int argc, char *argv[]) {
       sizeof(game_t) + (atoi(argv[1]) * atoi(argv[2]) * sizeof(int)));
   sync_t *sync = open_sync_memory(sizeof(sync_t));
 
-  // Inicializar ncurses
-  // initialize_ncurses();
-  setenv("TERM", "xterm-256color", 1);
-  initscr();
-  start_color();
-  cbreak();
-  noecho();
-  keypad(stdscr, TRUE);
-  curs_set(0);
+  initialize_ncurses();
 
-  if (!has_colors()) {
-    endwin();
-    printf("Your terminal does not support colors.\n");
-    exit(1);
-  }
+  terminal_color_check();
 
   define_color_pairs();
 
