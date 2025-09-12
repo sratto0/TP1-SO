@@ -1,27 +1,3 @@
-man 2 pipe
-man 7 pipe
-man 2 pipe
-man select
-exit
-make format
-cd root
-make format
-apt-get update && apt-get install -y clang-format
-make format
-make format
-cd root
-make format
-sudo apt update; sudo apt install clang-format -y
-apt update
-apt update
-apt install clang-format -y
-make format
-make format
-make format
-make format
-make format
-man select_tut
-man 2 select
 man dup2
 man select
 man
@@ -497,4 +473,28 @@ make
 make clean
 make
 ./master_arm/ChompChamps -p ./player ./player ./player ./player ./player ./player -v ./view
+exit
+cd root
+make 
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player  -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player  ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+exit
+cd root
+make valgrind_master
+make analyze
 exit
