@@ -201,8 +201,9 @@ int main(int argc, char *argv[]) {
     printf("Using: %s <width> <height>\n", argv[0]);
     return 1;
   }
-  
-  game_t *game = open_game_memory(sizeof(game_t) + (atoi(argv[1]) * atoi(argv[2]) * sizeof(int)));
+
+  game_t *game = open_game_memory(
+      sizeof(game_t) + (atoi(argv[1]) * atoi(argv[2]) * sizeof(int)));
   sync_t *sync = open_sync_memory(sizeof(sync_t));
 
   // Inicializar ncurses
@@ -235,9 +236,9 @@ int main(int argc, char *argv[]) {
     sem_wait_check(&sync->master_to_view);
 
     print_board_ncurses(game);
-    
-    sem_post_check(&sync->view_to_master); 
-    
+
+    sem_post_check(&sync->view_to_master);
+
     if (game->finished) {
       mvprintw(LINES - 2, 0, "Game over! Press any key to exit...");
       refresh();
@@ -249,7 +250,9 @@ int main(int argc, char *argv[]) {
   }
 
   endwin();
-  close_memory("/game_state", game, sizeof(game_t) + (atoi(argv[1]) * atoi(argv[2]) * sizeof(int)), OPEN);
+  close_memory("/game_state", game,
+               sizeof(game_t) + (atoi(argv[1]) * atoi(argv[2]) * sizeof(int)),
+               OPEN);
   close_memory("/game_sync", sync, sizeof(sync_t), OPEN);
   return 0;
 }

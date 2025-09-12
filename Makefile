@@ -15,12 +15,10 @@ OBJS_MASTER = master.o master_lib.o utils.o
 PVS_ANALYZER = pvs-studio-analyzer
 PVS_REPORT = plog-converter
 
-VALGRIND = valgrind --leak-check=full
+VALGRIND = valgrind --leak-check=full --trace-children=yes
 
 
-all: clean deps player master view
-
-# all: deps view player
+all: deps player master view
 
 player: $(OBJS_PLAYER)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
@@ -44,19 +42,13 @@ deps:
 	apt-get install -y libncurses5-dev libncursesw5-dev
 
 analyze: clean 
-	$(PVS_ANALYZER) trace -- make all
+	$(PVS_ANALYZER) trace -o strace_out -- make -B all
 	$(PVS_ANALYZER) analyze -o PVS-Studio.log
 	$(PVS_REPORT) -a GA:1,2,3,4 -t fullhtml PVS-Studio.log -o PVS-Studio.html
 
-valgrind_player: player
-	$(VALGRIND) ./player
+valgrind_master: deps master
+	$(VALGRIND) ./master -p ./player -v ./view
 
-valgrind_view: view
-	$(VALGRIND) ./view
-
-valgrind-master: master
-	$(VALGRIND) ./master
-
-.PHONY: all player view format clean deps analyse valgrind-view valgrind-player
+.PHONY: all player view format clean deps analyze valgrind_view valgrind_player valgrin_master
 
 # all player view format clean deps analyse valgrind-view valgrind-player valgrind-master

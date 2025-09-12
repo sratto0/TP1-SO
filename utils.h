@@ -20,7 +20,11 @@
     exit(EXIT_FAILURE);                                                        \
   } while (0);
 
-#define err_msg(msg) do { fprintf(stderr, "%s\n", msg); exit(EXIT_FAILURE); } while (0)
+#define err_msg(msg)                                                           \
+  do {                                                                         \
+    fprintf(stderr, "%s\n", msg);                                              \
+    exit(EXIT_FAILURE);                                                        \
+  } while (0)
 
 game_t *open_game_memory(int size);
 
@@ -36,6 +40,6 @@ void sem_post_check(sem_t *sem);
 
 void sem_destroy_check(sem_t *sem);
 
-void close_memory(const char * name, void *mem, size_t size, char unlink_shm);
+void close_memory(const char *name, void *mem, size_t size, char unlink_shm);
 
 #endif

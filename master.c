@@ -6,21 +6,17 @@
 
 int main(int argc, char *argv[]) {
 
-  if (argc < 3) {
-    err_msg("Incorrect number of arguments\n");
-  }
+  argument_amount_check(argc);
 
   char *view_path = NULL;
   unsigned int delay = 200, timeout = 10, seed = time(NULL);
   char *players_paths[9] = {NULL};
   int player_count = 0;
-  unsigned short width = 20, height = 10;
+  unsigned short width = 10, height = 10;
 
   get_arguments(argc, argv, &width, &height, &delay, &timeout, &seed, &view_path, players_paths, &player_count);
 
-  if (player_count < 1 || player_count > 9) {
-    err_msg("Invalid number of players");
-  }
+  check_player_count(player_count);
 
   game_t *game = create_game_memory(sizeof(game_t) + (width * height * sizeof(int)));
   sync_t *sync = create_sync_memory(sizeof(sync_t));
@@ -40,85 +36,78 @@ int main(int argc, char *argv[]) {
   pid_t view_pid;
   sprintf(argv_width, "%d", game->width);
   sprintf(argv_height, "%d", game->height);
-  
+
   create_view(view_path, argv_width, argv_height, &view_pid);
 
   int players_fds[player_count][2];
   int max_fd;
-    
+
   init_players(game, players_fds, player_count, &max_fd);
-    
+
   create_players(players_paths, players_fds, argv_width, argv_height, player_count, game);
 
-    fd_set read_fds, active_fds;
-    FD_ZERO(&active_fds);
+  fd_set read_fds, active_fds;
+  FD_ZERO(&active_fds);
 
-    for (int i = 0; i < player_count; i++) {
-      if (game->players[i].process_id == 0) {
-        safe_close(players_fds[i][0]);
-      } else {
-        FD_SET(players_fds[i][0], &active_fds);
-      }
-      safe_close(players_fds[i][1]);
+  for (int i = 0; i < player_count; i++) {
+    if (game->players[i].process_id == 0) {
+      safe_close(players_fds[i][0]);
+    } else {
+      FD_SET(players_fds[i][0], &active_fds);
+    }
+    safe_close(players_fds[i][1]);
+  }
+
+  time_t last_move_time = time(NULL);
+
+  int last_served = 0; // para implementar round-robin
+
+  while (!game->finished) {
+    if (game_ended(game)) {
+      game_over(game, sync);
+      break;
     }
 
-    time_t last_move_time = time(NULL);
-    
-
-    int last_served = 0; // para implementar round-robin
-
-    while (!game->finished) {
-      if (game_ended(game)) {
-        game_over(game, sync);
-        break;
-      }
-
-      // Timeout global (tiempo sin movimientos válidos)
-      if (time(NULL) - last_move_time > timeout) {
-        printf("Reached global timeout\n");
-        game_over(game, sync);
-        break;
-      }
-
-      read_fds = active_fds;
-      struct timeval tv = { .tv_sec = timeout, .tv_usec = 0 };
-        
-      int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
-      if (ready == -1) {
-        perror("select");
-        break;
-      } else if (ready == 0) {
-        //printf("Timeout: nadie movió\n");
-        game_over(game, sync);
-        break;
-      }
-      process_players(game, sync, player_count, players_fds, read_fds, &last_served, &last_move_time, delay);
-    } //while
-
-    for (int i = 0; i < player_count; i++) {
-        if (game->players[i].process_id != 0) {
-            sem_post_check(&sync->players_ready[i]);
-        }
+    if(timeout_check(last_move_time, timeout, game, sync)){
+      break;
     }
 
-    int view_ret;
-    if (view_path != NULL) {
-      waitpid(view_pid, &view_ret, 0);
-    }
+    read_fds = active_fds;
+    struct timeval tv = {.tv_sec = timeout, .tv_usec = 0};
 
-    for (int i = 0; i < player_count; i++) {
-      int status;
-      if (game->players[i].process_id != 0) {
-        safe_close(players_fds[i][0]);
-        waitpid(game->players[i].process_id, &status, 0);
-      }else {
-        status = 256;
-      }
+    int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
+    if (ready == -1) {
+      perror("select");
+      break;
+    } else if (ready == 0) {
+      game_over(game, sync);
+      break;
     }
+    process_players(game, sync, player_count, players_fds, read_fds,
+                    &last_served, &last_move_time, delay);
+  }
 
-    close_sems(sync, game->player_count);
-    close_memory("/game_sync", sync, sizeof(sync_t), CREATE);
-    close_memory("/game_state", game, sizeof(game_t) + (width * height * sizeof(int)), CREATE);
-    
-    return 0;
+  signal_all_players_ready(game, sync, player_count);
+
+  int view_ret;
+  if (view_path != NULL) {
+    waitpid(view_pid, &view_ret, 0);
+  }
+
+  for (int i = 0; i < player_count; i++) {
+    int status;
+    if (game->players[i].process_id != 0) {
+      safe_close(players_fds[i][0]);
+      waitpid(game->players[i].process_id, &status, 0);
+    } else {
+      status = 256;
+    }
+  }
+
+  close_sems(sync, game->player_count);
+  close_memory("/game_sync", sync, sizeof(sync_t), CREATE);
+  close_memory("/game_state", game,
+               sizeof(game_t) + (width * height * sizeof(int)), CREATE);
+
+  return 0;
 }

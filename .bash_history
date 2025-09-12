@@ -1,85 +1,3 @@
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player 0 -v ./view
-make
-./ChompChamps -p ./player 0 -v ./view
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-make
-./ChompChamps -p ./player -v ./view
-./ChompChamps -p ./player ./player -v ./view
-./ChompChamps -p ./player ./player -v ./view
-./ChompChamps -p ./player ./player ./player -v ./view
-./ChompChamps -p ./player ./player ./player -v ./view
-./ChompChamps -p ./player ./player ./player -v ./view
-exit
-cd ./root
-make all
-make all
-./ChompChamps -p ./player -v ./view
-sudo apt-get update
-apt-get update
-apt-get install libncurses5-dev libncursesw5-dev
-make all
-./ChompChamps -p ./player -v ./view
-apt-get update
-apt-get install -y build-essential libncurses5-dev libncursesw5-dev
-./ChompChamps -p ./player -v ./view
-make all
-./ChompChamps -p ./player -v ./view
-clear
-exit
-cd ./root
-make all
-apt-get install -y build-essential libncurses5-dev libncursesw5-dev
-apt-get install libncurses5-dev libncursesw5-dev
-make all
-./ChompChamps -p ./player -v ./view
-exit
-cd ./root
-make all
-apt-get install libncurses5-dev libncursesw5-dev
-make all
-./ChompChamps -p ./player -v ./view
-make all
-./ChompChamps -p ./player -v ./view
-make all
-./ChompChamps -p ./player -v ./view
-make all
-./ChompChamps -p ./player -v ./view
-./ChompChamps -p ./player -v ./view
-make all
-./ChompChamps -p ./player -v ./view
-exit
-./master_amd/ChompChamps -p ./player -v ./view
-cd ./root
-./master_amd/ChompChamps -p ./player -v ./view
-./master_amd/ChompChamps -p ./player -v ./view
-make
-./master_amd/ChompChamps -p ./player -v ./view
-./master_amd/ChompChamps -p ./player -v ./view
-./master_arm/ChompChamps -p ./player -v ./view
-./master_amd/ChompChamps -p ./player -v ./view
-ls
-./master_amd/ChompChamps -p ./player -v ./view
-make
-./master_amd/ChompChamps -p ./player -v ./view
-exit
-./master_amd/ChompChamps -p ./player -v ./view
-cd root
-make clean
-make
-make
-make
-make clean
-make
-./master_amd/ChompChamps -p ./player -v ./view
-make
-exit
-cd root
 make clean
 make
 ./master_amd/ChompChamps -p ./player -v ./view
@@ -498,3 +416,85 @@ make
 make
 ./master -v ./view
 ./master_arm/ChompChamps -p ./player -v ./view
+
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+ls
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player ./player -v ./view
+./master_arm/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+exit
+cd root
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+make valgrind_master
+make valgrind_master
+make -s valgrind_master
+make -s valgrind_view
+make -s valgrind_view
+make -s valgrind_master
+make -s valgrind_master
+make analyze
+make analyze
+make analyze
+make analyze
+clean
+cd root
+ls
+make clean
+make analyze
+make -B all analyze
+make  analyze
+make  analyze
+make  analyze
+make format
+apt-get update
+apt-get install -y clang-format
+make format
+exit
+cd root
+make clean
+make
+make
+make
+make
+make
+make analyze
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./vi
+./master_amd/ChompChamps -p ./player -v ./view
+chmod 777 ./master_amd/ChompChamps
+./master_amd/ChompChamps -p ./player -v ./view
+exit
+./master_amd/ChompChamps -p ./player -v ./view
+cd root
+./master_amd/ChompChamps -p ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+exit
+exit
+make -s valgrind_master
+cd root
+make -s valgrind_master
+make
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master_amd/ChompChamps -p ./player -v ./view
+make clean
+make
+./master_amd/ChompChamps -p ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+exi
+exit
