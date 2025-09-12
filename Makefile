@@ -44,7 +44,9 @@ deps:
 analyze: clean 
 	$(PVS_ANALYZER) trace -o strace_out -- make -B all
 	$(PVS_ANALYZER) analyze -o PVS-Studio.log
-	$(PVS_REPORT) -a GA:1,2,3,4 -t fullhtml PVS-Studio.log -o PVS-Studio.html
+# 	$(PVS_REPORT) -a GA:1,2,3,4 -t fullhtml PVS-Studio.log -o PVS-Studio.html
+	$(PVS_REPORT) -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t fullhtml PVS-Studio.log -o PVS-Studio.html
+	
 
 valgrind_master: deps master
 	$(VALGRIND) ./master -p ./player -v ./view

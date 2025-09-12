@@ -1,51 +1,3 @@
-make clean
-make
-./master_amd/ChompChamps -p ./player -v ./view
-./master_amd/ChompChamps -p ./player ./player ./player -v ./view
-./master_amd/ChompChamps -p ./player ./player ./player -v ./view
-./master_amd/ChompChamps -p ./player ./player ./player -v ./view
-./master_amd/ChompChamps -p ./player ./player ./player -v ./view
-sudo apt-get update
-exit
-apt-get update
-apt-get update
-apt-get update
-apt-get update
-apt-get install -y libncurses5-dev libncursesw5-dev
-make clean
-make
-cd root
-make clean
-make
-./master_amd/ChompChamps -p ./player -v ./view
-export TERM=xterm-256color
-./master_amd/ChompChamps -p ./player -v ./view
-export TERM=xterm-256color
-echo $TERM
-exit
-cd root
-make 
-make 
-make analyze
-make 
-make analyze
-pvs-studio-analyzer credentials PVS-Studio Free FREE-FREE-FREE-FREE
-make analyze
-exit
-make analyze
-cd root
-make analyze
-make analyze
-make analyze
-make
-clean
-make clean
-make
-make clean
-make
-make clean
-make
-make clean
 make
 make
 make clean
@@ -497,4 +449,52 @@ make
 ./master -p ./player ./player ./player ./player ./player ./player -v ./view
 ./master -p ./player ./player ./player ./player ./player ./player -v ./view
 exi
+exit
+make clean
+cd root
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player -v ./view
+exit
+cd root
+make clean
+make
+make
+make
+make format
+make format
+make clean
+make
+make
+make clean
+make 
+./master -p ./player ./player ./player ./player -v ./view
+make format
+apt-get update
+apt-get install -y clang-format
+make format
+exit
+make clean
+cd root
+make clean
+make
+./master -p ./player ./player ./player ./player -v ./view
+make analyze
+exit
+make analyze
+cd root
+make analyze
+exit
+cd root
+./master -p ./player ./player ./player ./player -v ./view
+make clean
+make
+./master -p ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view
+./master -p ./player ./player ./player ./player ./player ./player -v ./view -d 3000
+./master -p ./player ./player ./player ./player ./player ./player -v ./view -w 30
 exit

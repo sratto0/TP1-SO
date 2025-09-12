@@ -6,21 +6,21 @@
 #include "utils.h"
 
 void enter_reader(sync_t *sync) {
-  sem_wait_check(&sync->readers_mutex);
+  sem_wait_check(&sync->readers_count_mutex);
   sync->readers_count++;
   if (sync->readers_count == 1) {
     sem_wait_check(&sync->state_mutex);
   }
-  sem_post_check(&sync->readers_mutex);
+  sem_post_check(&sync->readers_count_mutex);
 }
 
 void exit_reader(sync_t *sync) {
-  sem_wait_check(&sync->readers_mutex);
+  sem_wait_check(&sync->readers_count_mutex);
   sync->readers_count--;
   if (sync->readers_count == 0) {
     sem_post_check(&sync->state_mutex);
   }
-  sem_post_check(&sync->readers_mutex);
+  sem_post_check(&sync->readers_count_mutex);
 }
 
 unsigned char choose_move(int local_board[8]) {
@@ -40,11 +40,10 @@ void get_state(game_t *game, unsigned int player_id, int local_board[8]) {
   int y = game->players[player_id].y;
   int width = game->width;
   int height = game->height;
-  int dx[] = {0, 1, 1, 1, 0, -1, -1, -1};
-  int dy[] = {-1, -1, 0, 1, 1, 1, 0, -1};
+
   for (unsigned char dir = 0; dir < 8; dir++) {
-    int new_x = x + dx[dir];
-    int new_y = y + dy[dir];
+    int new_x = x + directions[dir][0];
+    int new_y = y + directions[dir][1];
     if (new_x >= 0 && new_x < width && new_y >= 0 && new_y < height) {
       local_board[dir] = game->board[new_y * (width) + new_x];
     } else {

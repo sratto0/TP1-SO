@@ -14,11 +14,13 @@ int main(int argc, char *argv[]) {
   int player_count = 0;
   unsigned short width = 10, height = 10;
 
-  get_arguments(argc, argv, &width, &height, &delay, &timeout, &seed, &view_path, players_paths, &player_count);
+  get_arguments(argc, argv, &width, &height, &delay, &timeout, &seed,
+                &view_path, players_paths, &player_count);
 
   check_player_count(player_count);
 
-  game_t *game = create_game_memory(sizeof(game_t) + (width * height * sizeof(int)));
+  game_t *game =
+      create_game_memory(sizeof(game_t) + (width * height * sizeof(int)));
   sync_t *sync = create_sync_memory(sizeof(sync_t));
 
   init_sync(sync);
@@ -26,41 +28,37 @@ int main(int argc, char *argv[]) {
 
   fill_board(game);
 
-  char argv_width[MAX_DIGITS] = {0};
-  char argv_height[MAX_DIGITS] = {0};
-
-  print_configuration(width, height, delay, timeout, seed, view_path, players_paths, player_count);
+  print_configuration(width, height, delay, timeout, seed, view_path,
+                      players_paths, player_count);
 
   sleep(2);
 
   pid_t view_pid;
+
+  char argv_width[MAX_DIGITS] = {0};
+  char argv_height[MAX_DIGITS] = {0};
+  
   sprintf(argv_width, "%d", game->width);
   sprintf(argv_height, "%d", game->height);
 
-  create_view(view_path, argv_width, argv_height, &view_pid);
+  create_view_process(view_path, argv_width, argv_height, &view_pid);
 
   int players_fds[player_count][2];
   int max_fd;
 
-  init_players(game, players_fds, player_count, &max_fd);
+  init_players_data_and_pipes(game, players_fds, player_count, &max_fd);
 
-  create_players(players_paths, players_fds, argv_width, argv_height, player_count, game);
+  create_players_processes(players_paths, players_fds, argv_width, argv_height,
+                           player_count, game);
 
   fd_set read_fds, active_fds;
   FD_ZERO(&active_fds);
 
-  for (int i = 0; i < player_count; i++) {
-    if (game->players[i].process_id == 0) {
-      safe_close(players_fds[i][0]);
-    } else {
-      FD_SET(players_fds[i][0], &active_fds);
-    }
-    safe_close(players_fds[i][1]);
-  }
+  setup_fds_for_select(game, players_fds, player_count, &active_fds);
 
   time_t last_move_time = time(NULL);
 
-  int last_served = 0; // para implementar round-robin
+  int last_served = 0;
 
   while (!game->finished) {
     if (game_ended(game)) {
@@ -68,7 +66,7 @@ int main(int argc, char *argv[]) {
       break;
     }
 
-    if(timeout_check(last_move_time, timeout, game, sync)){
+    if (timeout_check(last_move_time, timeout, game, sync)) {
       break;
     }
 
@@ -89,20 +87,8 @@ int main(int argc, char *argv[]) {
 
   signal_all_players_ready(game, sync, player_count);
 
-  int view_ret;
-  if (view_path != NULL) {
-    waitpid(view_pid, &view_ret, 0);
-  }
-
-  for (int i = 0; i < player_count; i++) {
-    int status;
-    if (game->players[i].process_id != 0) {
-      safe_close(players_fds[i][0]);
-      waitpid(game->players[i].process_id, &status, 0);
-    } else {
-      status = 256;
-    }
-  }
+  wait_view(view_path, view_pid);
+  close_and_wait_players(game, players_fds, player_count);
 
   close_sems(sync, game->player_count);
   close_memory("/game_sync", sync, sizeof(sync_t), CREATE);

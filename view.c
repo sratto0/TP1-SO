@@ -233,11 +233,11 @@ int main(int argc, char *argv[]) {
   nodelay(stdscr, TRUE);
 
   while (true) {
-    sem_wait_check(&sync->master_to_view);
+    sem_wait_check(&sync->have_to_print);
 
     print_board_ncurses(game);
 
-    sem_post_check(&sync->view_to_master);
+    sem_post_check(&sync->finished_printing);
 
     if (game->finished) {
       mvprintw(LINES - 2, 0, "Game over! Press any key to exit...");

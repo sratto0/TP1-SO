@@ -20,6 +20,8 @@
     exit(EXIT_FAILURE);                                                        \
   } while (0);
 
+extern const int directions[8][2];
+
 #define err_msg(msg)                                                           \
   do {                                                                         \
     fprintf(stderr, "%s\n", msg);                                              \

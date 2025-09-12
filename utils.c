@@ -4,6 +4,9 @@
 
 #include "utils.h"
 
+const int directions[8][2] = {{0, -1}, {1, -1}, {1, 0},  {1, 1},
+                              {0, 1},  {-1, 1}, {-1, 0}, {-1, -1}};
+
 void *memory_manager(const char *name, size_t size, int open_flags,
                      char create) {
   int fd = shm_open(name, open_flags, 0666);
