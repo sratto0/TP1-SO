@@ -94,7 +94,7 @@ void print_configuration(unsigned short width, unsigned short height,
                          unsigned int delay, unsigned int timeout,
                          unsigned int seed, char *view_path,
                          char **players_paths, int player_count) {
-  printf("width = %d\nheight = %d\ndelay = %dms\ntimeout = %ds\nseed=%d\nview "
+  printf("width = %hu\nheight = %hu\ndelay = %ums\ntimeout = %us\nseed=%u\nview "
          "= %s\nplayers:\n",
          width, height, delay, timeout, seed,
          view_path != NULL ? view_path : " - ");

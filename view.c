@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
   sync_t *sync = open_sync_memory(sizeof(sync_t));
 
   // Inicializar ncurses
+  // initialize_ncurses();
   setenv("TERM", "xterm-256color", 1);
   initscr();
   start_color();
@@ -33,21 +34,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
-  // Definir pares de colores
-  init_pair(COLOR_PAIR_BOARD, COLOR_WHITE, COLOR_BLACK);
-  init_pair(COLOR_PAIR_NUMBER, COLOR_GREEN, COLOR_BLACK);
-  init_pair(COLOR_PAIR_PLAYER1, COLOR_RED, COLOR_BLACK);
-  init_pair(COLOR_PAIR_PLAYER2, COLOR_GREEN, COLOR_BLACK);
-  init_pair(COLOR_PAIR_PLAYER3, COLOR_YELLOW, COLOR_BLACK);
-  init_pair(COLOR_PAIR_PLAYER4, COLOR_BLUE, COLOR_BLACK);
-  init_pair(COLOR_PAIR_PLAYER5, COLOR_MAGENTA, COLOR_BLACK);
-  init_pair(COLOR_PAIR_PLAYER6, COLOR_WHITE, COLOR_CYAN);
-  init_pair(COLOR_PAIR_PLAYER7, COLOR_WHITE, COLOR_GREEN);
-  init_pair(COLOR_PAIR_PLAYER8, COLOR_BLACK, COLOR_WHITE);
-  init_pair(COLOR_PAIR_PLAYER9, COLOR_WHITE, COLOR_RED);
-  init_pair(COLOR_PAIR_TITLE, COLOR_WHITE, COLOR_BLUE);
-  init_pair(COLOR_PAIR_INFO, COLOR_CYAN, COLOR_BLACK);
-
+  define_color_pairs();
 
   nodelay(stdscr, TRUE);
 

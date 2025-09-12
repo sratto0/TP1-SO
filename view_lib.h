@@ -29,6 +29,7 @@
 int get_player_color(int player_id);
 void print_board_ncurses(game_t *game);
 void print_scoreboard(game_t *game, int start_y);
+void define_color_pairs();
 
 
 #endif

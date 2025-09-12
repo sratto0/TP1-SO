@@ -1,9 +1,29 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java:
+// https://pvs-studio.com
+
 #include "view_lib.h"
 #include <ncurses.h>
 
 int get_player_color(int player_id) {
     // Asume que COLOR_PAIR_PLAYER1 es el primer valor consecutivo
     return COLOR_PAIR_PLAYER1 + player_id;
+}
+
+void define_color_pairs() {
+  init_pair(COLOR_PAIR_BOARD, COLOR_WHITE, COLOR_BLACK);
+  init_pair(COLOR_PAIR_NUMBER, COLOR_GREEN, COLOR_BLACK);
+  init_pair(COLOR_PAIR_PLAYER1, COLOR_RED, COLOR_BLACK);
+  init_pair(COLOR_PAIR_PLAYER2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(COLOR_PAIR_PLAYER3, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(COLOR_PAIR_PLAYER4, COLOR_BLUE, COLOR_BLACK);
+  init_pair(COLOR_PAIR_PLAYER5, COLOR_MAGENTA, COLOR_BLACK);
+  init_pair(COLOR_PAIR_PLAYER6, COLOR_WHITE, COLOR_CYAN);
+  init_pair(COLOR_PAIR_PLAYER7, COLOR_WHITE, COLOR_GREEN);
+  init_pair(COLOR_PAIR_PLAYER8, COLOR_BLACK, COLOR_WHITE);
+  init_pair(COLOR_PAIR_PLAYER9, COLOR_WHITE, COLOR_RED);
+  init_pair(COLOR_PAIR_TITLE, COLOR_WHITE, COLOR_BLUE);
+  init_pair(COLOR_PAIR_INFO, COLOR_CYAN, COLOR_BLACK);
 }
 
 // Función para dibujar el tablero limpio
@@ -140,12 +160,12 @@ void print_scoreboard(game_t *game, int start_y) {
         
         // Color del jugador
         attron(COLOR_PAIR(get_player_color(i)) | A_BOLD);
-        mvprintw(y, score_start_x, "P%d", i);
+        mvprintw(y, score_start_x, "P%u", i);
         attroff(COLOR_PAIR(get_player_color(i)) | A_BOLD);
         
         // Información del jugador
         attron(COLOR_PAIR(COLOR_PAIR_INFO));
-        mvprintw(y, score_start_x + 4, "Score: %3d  Valid: %2d  Invalid: %2d  [%s]",
+        mvprintw(y, score_start_x + 4, "Score: %3u  Valid: %2u  Invalid: %2u  [%s]",
                  game->players[i].score,
                  game->players[i].valid_requests,
                  game->players[i].invalid_requests,
@@ -156,7 +176,7 @@ void print_scoreboard(game_t *game, int start_y) {
     // Información del juego
     attron(COLOR_PAIR(COLOR_PAIR_INFO));
     mvprintw(start_y + game->player_count + 4, score_start_x, 
-             "Board: %dx%d  |  Status: %s", 
+             "Board: %hux%hu  |  Status: %s", 
              game->width, game->height,
              game->finished ? "FINISHED" : "PLAYING");
     attroff(COLOR_PAIR(COLOR_PAIR_INFO));
