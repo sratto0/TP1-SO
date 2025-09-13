@@ -264,16 +264,17 @@ bool timeout_check(time_t last_move_time, unsigned int timeout, game_t *game,
 }
 
 void process_players(game_t *game, sync_t *sync, int player_count,
-                     int players_fds[][2], fd_set read_fds, int *last_served,
+                     int players_fds[][2], fd_set read_fds, fd_set * active_fds, int *last_served,
                      time_t *last_move_time, unsigned int delay) {
   for (int j = 0; j < player_count; j++) {
     int i = (*last_served + j) % player_count;
 
-    if (FD_ISSET(players_fds[i][0], &read_fds)) {
+    if (!game->players[i].blocked && FD_ISSET(players_fds[i][0], &read_fds)) {
       unsigned char dir;
       int result = receive_move(players_fds[i][0], &dir);
 
       if (result == -1) {
+        FD_CLR(players_fds[i][0], active_fds);
         game->players[i].blocked = true;
       } else {
         bool moved = execute_move(game, sync, i, dir);
@@ -403,6 +404,8 @@ void wait_view(char *path, pid_t pid) {
   int view_ret;
   if (path != NULL) {
     waitpid(pid, &view_ret, 0);
+    printf("El view (%s) devolvio el valor %d\n", path ,view_ret);
+
   }
 }
 
@@ -416,6 +419,7 @@ void close_and_wait_players(game_t *game, int players_fds[][2],
     } else {
       status = 256;
     }
+    printf("El jugador %d (%s) retorno el valor %3d con puntaje %5d / %5d / %5d \n", i, game->players[i].name, status, game->players[i].score, game->players[i].valid_requests, game->players[i].invalid_requests);
   }
 }
 

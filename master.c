@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
       game_over(game, sync);
       break;
     }
-    process_players(game, sync, player_count, players_fds, read_fds,
+    process_players(game, sync, player_count, players_fds, read_fds, &active_fds,
                     &last_served, &last_move_time, delay);
   }
 

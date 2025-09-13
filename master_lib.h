@@ -50,7 +50,7 @@ void game_over(game_t *game, sync_t *sync);
 bool timeout_check(time_t last_move_time, unsigned int timeout, game_t *game,
                    sync_t *sync);
 void process_players(game_t *game, sync_t *sync, int player_count,
-                     int players_fds[][2], fd_set read_fds, int *last_served,
+                     int players_fds[][2], fd_set read_fds, fd_set * active_fds, int *last_served,
                      time_t *last_move_time, unsigned int delay);
 int receive_move(int fd, unsigned char *dir);
 bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir);
