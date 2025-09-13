@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   init_sync(sync);
   init_game(game, width, height, player_count);
 
-  fill_board(game);
+  fill_board(game, seed);
 
   print_configuration(width, height, delay, timeout, seed, view_path,
                       players_paths, player_count);
@@ -52,8 +52,7 @@ int main(int argc, char *argv[]) {
                            player_count, game);
 
   fd_set read_fds, active_fds;
-  FD_ZERO(&active_fds);
-
+ 
   setup_fds_for_select(game, players_fds, player_count, &active_fds);
 
   time_t last_move_time = time(NULL);
@@ -62,26 +61,27 @@ int main(int argc, char *argv[]) {
 
   while (!game->finished) {
     if (game_ended(game)) {
-      game_over(game, sync);
-      break;
+        game_over(game, sync);
+        sync_with_view(sync, delay);
+        break;
     }
 
-    if (timeout_check(last_move_time, timeout, game, sync)) {
-      break;
-    }
+    time_t now = time(NULL);
+    int remaining = timeout - (now - last_move_time);
 
     read_fds = active_fds;
-    struct timeval tv = {.tv_sec = timeout, .tv_usec = 0};
+    struct timeval tv = {.tv_sec = remaining, .tv_usec = 0};
 
     int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
     if (ready == -1) {
-      perror("select");
-      break;
+        perror("select");
+        break;
     } else if (ready == 0) {
-      game_over(game, sync);
-      break;
+        game_over(game, sync);
+        sync_with_view(sync, delay);
+        break;
     }
-    process_players(game, sync, player_count, players_fds, read_fds, &active_fds,
+    process_players(game, sync, player_count, players_fds, &read_fds, &active_fds,
                     &last_served, &last_move_time, delay);
   }
 

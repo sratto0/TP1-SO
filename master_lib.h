@@ -29,7 +29,7 @@ void init_sync(sync_t *sync);
 void init_semaphore(sem_t *sem, int value);
 void init_game(game_t *game, unsigned short width, unsigned short height,
                unsigned int player_count);
-void fill_board(game_t *game);
+void fill_board(game_t *game, unsigned int seed);
 void print_configuration(unsigned short width, unsigned short height,
                          unsigned int delay, unsigned int timeout,
                          unsigned int seed, char *view_path,
@@ -47,13 +47,11 @@ void setup_fds_for_select(game_t *game, int players_fds[][2], int player_count,
                           fd_set *active_fds);
 int game_ended(game_t *game);
 void game_over(game_t *game, sync_t *sync);
-bool timeout_check(time_t last_move_time, unsigned int timeout, game_t *game,
-                   sync_t *sync);
 void process_players(game_t *game, sync_t *sync, int player_count,
-                     int players_fds[][2], fd_set read_fds, fd_set * active_fds, int *last_served,
+                     int players_fds[][2], fd_set * read_fds, fd_set * active_fds, int *last_served,
                      time_t *last_move_time, unsigned int delay);
 int receive_move(int fd, unsigned char *dir);
-bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir);
+bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir, int players_fds[][2], fd_set * active_fds);
 void sync_with_view(sync_t *sync, unsigned int delay);
 bool any_player_can_move(game_t *game);
 bool is_valid_move(int x, int y, game_t *game);

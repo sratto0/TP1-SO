@@ -2,7 +2,6 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java:
 // https://pvs-studio.com
 
-#include "player.h"
 #include "player_lib.h"
 
 int main(int argc, char *argv[]) {

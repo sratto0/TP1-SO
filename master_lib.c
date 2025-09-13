@@ -91,8 +91,8 @@ void init_game(game_t *game, unsigned short width, unsigned short height,
   game->finished = false;
 }
 
-void fill_board(game_t *game) {
-  srand(time(NULL));
+void fill_board(game_t *game, unsigned int seed) {
+  srand(seed);
   for (int i = 0; i < (game->width * game->height); i++) {
     game->board[i] = (rand() % 9) + 1;
   }
@@ -253,38 +253,27 @@ void game_over(game_t *game, sync_t *sync) {
   sem_post_check(&sync->state_mutex);
 }
 
-bool timeout_check(time_t last_move_time, unsigned int timeout, game_t *game,
-                   sync_t *sync) {
-  if (time(NULL) - last_move_time > timeout) {
-    printf("Reached global timeout\n");
-    game_over(game, sync);
-    return true;
-  }
-  return false;
-}
-
 void process_players(game_t *game, sync_t *sync, int player_count,
-                     int players_fds[][2], fd_set read_fds, fd_set * active_fds, int *last_served,
+                     int players_fds[][2], fd_set * read_fds, fd_set * active_fds, int *last_served,
                      time_t *last_move_time, unsigned int delay) {
   for (int j = 0; j < player_count; j++) {
     int i = (*last_served + j) % player_count;
 
-    if (!game->players[i].blocked && FD_ISSET(players_fds[i][0], &read_fds)) {
+    if (!game->players[i].blocked && FD_ISSET(players_fds[i][0], read_fds)) {
       unsigned char dir;
       int result = receive_move(players_fds[i][0], &dir);
-
       if (result == -1) {
         FD_CLR(players_fds[i][0], active_fds);
         game->players[i].blocked = true;
       } else {
-        bool moved = execute_move(game, sync, i, dir);
+        bool moved = execute_move(game, sync, i, dir, players_fds, active_fds);
+        
         if (moved) {
           *last_move_time = time(NULL);
 
           sync_with_view(sync, delay);
 
           if (!any_player_can_move(game)) {
-            printf("The game has ended: no player can move\n");
             game_over(game, sync);
             sync_with_view(sync, delay);
             break;
@@ -314,14 +303,14 @@ int receive_move(int fd, unsigned char *dir) {
   return 1;
 }
 
-bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
+bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir, int players_fds[][2], fd_set * active_fds) {
   sem_wait_check(&sync->writer_mutex);
   sem_wait_check(&sync->state_mutex);
   sem_post_check(&sync->writer_mutex);
 
   bool valid = false;
 
-  if (dir > 7) {
+  if (dir > 7 ) {
     game->players[turno].invalid_requests++;
   } else {
     int dx = directions[dir][0];
@@ -347,7 +336,9 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir) {
   for (unsigned int i = 0; i < game->player_count; i++) {
     if (!game->players[i].blocked &&
         !has_valid_moves(game, &game->players[i])) {
+      FD_CLR(players_fds[i][0], active_fds);
       game->players[i].blocked = true;
+      
     }
   }
 
