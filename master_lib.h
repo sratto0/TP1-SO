@@ -47,7 +47,7 @@ void setup_fds_for_select(game_t *game, int players_fds[][2], int player_count,
                           fd_set *active_fds);
 int game_ended(game_t *game);
 void game_over(game_t *game, sync_t *sync);
-void process_players(game_t *game, sync_t *sync, int player_count,
+void process_player(game_t *game, sync_t *sync, int player_count,
                      int players_fds[][2], fd_set * read_fds, fd_set * active_fds, int *last_served,
                      time_t *last_move_time, unsigned int delay);
 int receive_move(int fd, unsigned char *dir);

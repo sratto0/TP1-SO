@@ -253,7 +253,7 @@ void game_over(game_t *game, sync_t *sync) {
   sem_post_check(&sync->state_mutex);
 }
 
-void process_players(game_t *game, sync_t *sync, int player_count,
+void process_player(game_t *game, sync_t *sync, int player_count,
                      int players_fds[][2], fd_set * read_fds, fd_set * active_fds, int *last_served,
                      time_t *last_move_time, unsigned int delay) {
   for (int j = 0; j < player_count; j++) {
