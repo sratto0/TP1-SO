@@ -34,7 +34,7 @@ format:
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf *.o player master view PVS-Studio.html *log strace_out
+	rm -rf *.o player master view PVS-Studio.html *log strace_out 
 
 deps:
 	apt-get install -y libncurses5-dev libncursesw5-dev
