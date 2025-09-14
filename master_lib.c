@@ -383,6 +383,44 @@ bool has_valid_moves(game_t *game, player_t *player) {
   return false;
 }
 
+void update_winner(unsigned int *max_score, int * winner_index, bool * tie, unsigned int * invalid_requests, unsigned int * valid_requests, int i, game_t * game) {
+  *max_score = game->players[i].score;
+  *winner_index = i;
+  *invalid_requests = game->players[i].invalid_requests;
+  *valid_requests = game->players[i].valid_requests;
+  *tie = false;
+}
+
+void choose_winner(game_t *game) {
+  unsigned int max_score = 0;
+  int winner_index = -1;
+  unsigned int current_winner_invalid_requests = 0;
+  unsigned int current_winner_valid_requests = 0;
+  bool tie = false;
+
+  for (unsigned int i = 0; i < game->player_count; i++) {
+    if (game->players[i].score > max_score) {
+      update_winner(&max_score, &winner_index, &tie, &current_winner_invalid_requests, &current_winner_valid_requests, i, game);
+    } else if (game->players[i].score == max_score) {
+      if (game->players[i].valid_requests < current_winner_valid_requests) {
+        update_winner(&max_score, &winner_index, &tie, &current_winner_invalid_requests, &current_winner_valid_requests, i, game);
+      } else if (game->players[i].valid_requests == current_winner_valid_requests) {
+        if (game->players[i].invalid_requests < current_winner_invalid_requests) {
+          update_winner(&max_score, &winner_index, &tie, &current_winner_invalid_requests, &current_winner_valid_requests, i, game);
+        } else if (game->players[i].invalid_requests == current_winner_invalid_requests) {
+          tie = true;
+        } 
+      }
+    }
+  }
+
+  if (tie) {
+    printf("\nThe game ended in a tie with a score of %d.\n\n", max_score);
+  } else if (winner_index != -1) {
+    printf("\nThe winner is %s with a score of %d.\n\n", game->players[winner_index].name, max_score);
+  }
+}
+
 void signal_all_players_ready(game_t *game, sync_t *sync, int player_count) {
   for (int i = 0; i < player_count; i++) {
     if (game->players[i].process_id != 0) {

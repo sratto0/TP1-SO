@@ -56,6 +56,8 @@ void sync_with_view(sync_t *sync, unsigned int delay);
 bool any_player_can_move(game_t *game);
 bool is_valid_move(int x, int y, game_t *game);
 bool has_valid_moves(game_t *game, player_t *player);
+void update_winner(unsigned int *max_score, int * winner_index, bool * tie, unsigned int * invalid_requests, unsigned int * valid_requests, int i, game_t * game);
+void choose_winner(game_t *game);
 void signal_all_players_ready(game_t *game, sync_t *sync, int player_count);
 void wait_view(char *path, pid_t pid);
 void close_and_wait_players(game_t *game, int players_fds[][2],

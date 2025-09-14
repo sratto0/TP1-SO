@@ -1,13 +1,3 @@
-exit
-exit
-cd root
-./master_amd/ChompChamps -p ./player -v ./view
-./master_amd/ChompChamps -p ./player -v ./view
-./master -p ./player -v ./view
-make
-./master -p ./player -v ./view
-make clena
-make clean
 make 
 ./master -p ./player -v ./view
 ./master -p ./player -v ./view
@@ -498,3 +488,13 @@ make clean
 make
 ./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
 exit
+cd root
+make clean
+make
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view -w 7
+./master -p ./player ./player ./player ./player ./player ./player ./player ./player ./player -v ./view 
+./master -p ./player ./player ./player ./player ./player ./player  -v ./view
+make analyze
+make valgrind
+make analyze
+make valgrind_master

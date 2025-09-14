@@ -86,9 +86,11 @@ int main(int argc, char *argv[]) {
   }
 
   signal_all_players_ready(game, sync, player_count);
-
+  
   wait_view(view_path, view_pid);
   close_and_wait_players(game, players_fds, player_count);
+
+  choose_winner(game);
 
   close_sems(sync, game->player_count);
   close_memory("/game_sync", sync, sizeof(sync_t), CREATE);
