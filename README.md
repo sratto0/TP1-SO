@@ -1,12 +1,12 @@
 # TP1-SO
-Este ptoyecto implementa un juego llamado Chomp Champs, donde múltiples jugadores compiten en un tablero. El juego utiliza memoria compartida y semáforos para la sincronización entre procesos.
+Este proyecto implementa un juego llamado Chomp Champs, donde múltiples jugadores compiten en un tablero. El juego utiliza memoria compartida y semáforos para la sincronización entre procesos.
 
 ## Instrucciones de Compilación y Ejecución
 Sigue los pasos a continuación para compilar y ejecutar el proyecto correctamente dentro del contenedor Docker provisto por la cátedra:
 
 1. Dirígete al directorio raíz del proyecto en el contenedor Docker
 2. Para compilar el proyecto utiliza:
-`make all`
+`make`
 3. Para ejecutar el proyecto utiliza:
 `./master [parámetros]`
 
