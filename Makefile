@@ -44,8 +44,8 @@ analyze: clean
 	$(PVS_ANALYZER) analyze -o PVS-Studio.log
 	$(PVS_REPORT) -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t fullhtml PVS-Studio.log -o PVS-Studio.html
 
-valgrind_master: deps master
+valgrind: deps master player view
 	$(VALGRIND) ./master -p ./player -v ./view
 
-.PHONY: all player view format clean deps analyze valgrind_master
+.PHONY: all player view format clean deps analyze valgrind
 
