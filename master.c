@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
                            player_count, game);
 
   fd_set read_fds, active_fds;
- 
+
   setup_fds_for_select(game, players_fds, player_count, &active_fds);
 
   time_t last_move_time = time(NULL);
@@ -61,9 +61,9 @@ int main(int argc, char *argv[]) {
 
   while (!game->finished) {
     if (game_ended(game)) {
-        game_over(game, sync);
-        sync_with_view(sync, delay);
-        break;
+      game_over(game, sync);
+      sync_with_view(sync, delay);
+      break;
     }
 
     time_t now = time(NULL);
@@ -74,19 +74,19 @@ int main(int argc, char *argv[]) {
 
     int ready = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
     if (ready == -1) {
-        perror("select");
-        break;
+      perror("select");
+      break;
     } else if (ready == 0) {
-        game_over(game, sync);
-        sync_with_view(sync, delay);
-        break;
+      game_over(game, sync);
+      sync_with_view(sync, delay);
+      break;
     }
-    process_player(game, sync, player_count, players_fds, &read_fds, &active_fds,
-                    &last_served, &last_move_time, delay);
+    process_player(game, sync, player_count, players_fds, &read_fds,
+                   &active_fds, &last_served, &last_move_time, delay);
   }
 
   signal_all_players_ready(game, sync, player_count);
-  
+
   wait_view(view_path, view_pid);
   close_and_wait_players(game, players_fds, player_count);
 

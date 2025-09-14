@@ -48,15 +48,19 @@ void setup_fds_for_select(game_t *game, int players_fds[][2], int player_count,
 int game_ended(game_t *game);
 void game_over(game_t *game, sync_t *sync);
 void process_player(game_t *game, sync_t *sync, int player_count,
-                     int players_fds[][2], fd_set * read_fds, fd_set * active_fds, int *last_served,
-                     time_t *last_move_time, unsigned int delay);
+                    int players_fds[][2], fd_set *read_fds, fd_set *active_fds,
+                    int *last_served, time_t *last_move_time,
+                    unsigned int delay);
 int receive_move(int fd, unsigned char *dir);
-bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir, int players_fds[][2], fd_set * active_fds);
+bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir,
+                  int players_fds[][2], fd_set *active_fds);
 void sync_with_view(sync_t *sync, unsigned int delay);
 bool any_player_can_move(game_t *game);
 bool is_valid_move(int x, int y, game_t *game);
 bool has_valid_moves(game_t *game, player_t *player);
-void update_winner(unsigned int *max_score, int * winner_index, bool * tie, unsigned int * invalid_requests, unsigned int * valid_requests, int i, game_t * game);
+void update_winner(unsigned int *max_score, int *winner_index, bool *tie,
+                   unsigned int *invalid_requests, unsigned int *valid_requests,
+                   int i, game_t *game);
 void choose_winner(game_t *game);
 void signal_all_players_ready(game_t *game, sync_t *sync, int player_count);
 void wait_view(char *path, pid_t pid);

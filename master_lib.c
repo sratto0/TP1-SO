@@ -254,8 +254,9 @@ void game_over(game_t *game, sync_t *sync) {
 }
 
 void process_player(game_t *game, sync_t *sync, int player_count,
-                     int players_fds[][2], fd_set * read_fds, fd_set * active_fds, int *last_served,
-                     time_t *last_move_time, unsigned int delay) {
+                    int players_fds[][2], fd_set *read_fds, fd_set *active_fds,
+                    int *last_served, time_t *last_move_time,
+                    unsigned int delay) {
   for (int j = 0; j < player_count; j++) {
     int i = (*last_served + j) % player_count;
 
@@ -267,7 +268,7 @@ void process_player(game_t *game, sync_t *sync, int player_count,
         game->players[i].blocked = true;
       } else {
         bool moved = execute_move(game, sync, i, dir, players_fds, active_fds);
-        
+
         if (moved) {
           *last_move_time = time(NULL);
 
@@ -303,14 +304,15 @@ int receive_move(int fd, unsigned char *dir) {
   return 1;
 }
 
-bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir, int players_fds[][2], fd_set * active_fds) {
+bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir,
+                  int players_fds[][2], fd_set *active_fds) {
   sem_wait_check(&sync->writer_mutex);
   sem_wait_check(&sync->state_mutex);
   sem_post_check(&sync->writer_mutex);
 
   bool valid = false;
 
-  if (dir > 7 ) {
+  if (dir > 7) {
     game->players[turno].invalid_requests++;
   } else {
     int dx = directions[dir][0];
@@ -338,7 +340,6 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir, int 
         !has_valid_moves(game, &game->players[i])) {
       FD_CLR(players_fds[i][0], active_fds);
       game->players[i].blocked = true;
-      
     }
   }
 
@@ -383,7 +384,9 @@ bool has_valid_moves(game_t *game, player_t *player) {
   return false;
 }
 
-void update_winner(unsigned int *max_score, int * winner_index, bool * tie, unsigned int * invalid_requests, unsigned int * valid_requests, int i, game_t * game) {
+void update_winner(unsigned int *max_score, int *winner_index, bool *tie,
+                   unsigned int *invalid_requests, unsigned int *valid_requests,
+                   int i, game_t *game) {
   *max_score = game->players[i].score;
   *winner_index = i;
   *invalid_requests = game->players[i].invalid_requests;
@@ -400,16 +403,25 @@ void choose_winner(game_t *game) {
 
   for (unsigned int i = 0; i < game->player_count; i++) {
     if (game->players[i].score > max_score) {
-      update_winner(&max_score, &winner_index, &tie, &current_winner_invalid_requests, &current_winner_valid_requests, i, game);
+      update_winner(&max_score, &winner_index, &tie,
+                    &current_winner_invalid_requests,
+                    &current_winner_valid_requests, i, game);
     } else if (game->players[i].score == max_score) {
       if (game->players[i].valid_requests < current_winner_valid_requests) {
-        update_winner(&max_score, &winner_index, &tie, &current_winner_invalid_requests, &current_winner_valid_requests, i, game);
-      } else if (game->players[i].valid_requests == current_winner_valid_requests) {
-        if (game->players[i].invalid_requests < current_winner_invalid_requests) {
-          update_winner(&max_score, &winner_index, &tie, &current_winner_invalid_requests, &current_winner_valid_requests, i, game);
-        } else if (game->players[i].invalid_requests == current_winner_invalid_requests) {
+        update_winner(&max_score, &winner_index, &tie,
+                      &current_winner_invalid_requests,
+                      &current_winner_valid_requests, i, game);
+      } else if (game->players[i].valid_requests ==
+                 current_winner_valid_requests) {
+        if (game->players[i].invalid_requests <
+            current_winner_invalid_requests) {
+          update_winner(&max_score, &winner_index, &tie,
+                        &current_winner_invalid_requests,
+                        &current_winner_valid_requests, i, game);
+        } else if (game->players[i].invalid_requests ==
+                   current_winner_invalid_requests) {
           tie = true;
-        } 
+        }
       }
     }
   }
@@ -417,7 +429,8 @@ void choose_winner(game_t *game) {
   if (tie) {
     printf("\nThe game ended in a tie with a score of %u.\n\n", max_score);
   } else if (winner_index != -1) {
-    printf("\nThe winner is %s with a score of %u.\n\n", game->players[winner_index].name, max_score);
+    printf("\nThe winner is %s with a score of %u.\n\n",
+           game->players[winner_index].name, max_score);
   }
 }
 
@@ -433,8 +446,7 @@ void wait_view(char *path, pid_t pid) {
   int view_ret;
   if (path != NULL) {
     waitpid(pid, &view_ret, 0);
-    printf("El view (%s) devolvio el valor %d\n", path ,view_ret);
-
+    printf("El view (%s) devolvio el valor %d\n", path, view_ret);
   }
 }
 
@@ -448,7 +460,10 @@ void close_and_wait_players(game_t *game, int players_fds[][2],
     } else {
       status = 256;
     }
-    printf("El jugador %d (%s) retorno el valor %3d con puntaje %5u / %5u / %5u \n", i, game->players[i].name, status, game->players[i].score, game->players[i].valid_requests, game->players[i].invalid_requests);
+    printf("El jugador %d (%s) retorno el valor %3d con puntaje %5u / %5u / "
+           "%5u \n",
+           i, game->players[i].name, status, game->players[i].score,
+           game->players[i].valid_requests, game->players[i].invalid_requests);
   }
 }
 
