@@ -15,7 +15,11 @@ PVS_ANALYZER = pvs-studio-analyzer
 PVS_REPORT = plog-converter
 
 # VALGRIND = valgrind --leak-check=full --trace-children=yes
-VALGRIND = valgrind --leak-check=full --trace-children=yes --suppressions=ncurses.supp
+# VALGRIND = valgrind --leak-check=full --trace-children=yes --suppressions=ncurses.supp 
+VALGRIND = valgrind --leak-check=full --trace-children=yes --suppressions=ncurses.supp --tool=memcheck
+# VALGRIND = valgrind --leak-check=full --trace-children=yes --suppressions=ncurses.supp --tool=memcheck
+# VALGRIND = valgrind --trace-children=yes --suppressions=ncurses.supp --tool=helgrind
+# VALGRIND = valgrind --trace-children=yes --suppressions=ncurses.supp --tool=drd
 
 
 all: deps player master view
@@ -45,10 +49,10 @@ analyze: clean
 	$(PVS_ANALYZER) trace -o strace_out -- make -B all
 	$(PVS_ANALYZER) analyze -o PVS-Studio.log
 	$(PVS_REPORT) -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t fullhtml PVS-Studio.log -o PVS-Studio.html
-	
+# 	$(PVS_REPORT) -a GA:1,2,3,4 -t fullhtml PVS-Studio.log -o PVS-Studio.html
 
 valgrind_master: deps master
 	$(VALGRIND) ./master -p ./player -v ./view
 
-.PHONY: all player view format clean deps analyze valgrind_view valgrind_player valgrin_master
+.PHONY: all player view format clean deps analyze valgrind_master
 

@@ -1,19 +1,3 @@
-make 
-./master -p ./player -v ./view
-./master -p ./player -v ./view
-exit
-make
-cd root
-make
-./master -p ./player -v ./view
-make
-./master -p ./player -v ./view
-exit
-cd root
-make clean
-make
-./master -p ./player -v ./view
-./master -p ./player -v ./view
 make
 make
 ./master -p ./player -v ./view
@@ -498,3 +482,19 @@ make analyze
 make valgrind
 make analyze
 make valgrind_master
+man select
+cd root
+make analyze
+make analyze
+make analyze
+make analyze
+make valgrind_master
+make valgrind_master
+make valgrind_master
+make valgrind_master
+make valgrind_master
+make valgrind_master
+make valgrind_master
+make valgrind_master
+make valgrind_master
+exit

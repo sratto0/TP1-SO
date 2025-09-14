@@ -415,9 +415,9 @@ void choose_winner(game_t *game) {
   }
 
   if (tie) {
-    printf("\nThe game ended in a tie with a score of %d.\n\n", max_score);
+    printf("\nThe game ended in a tie with a score of %u.\n\n", max_score);
   } else if (winner_index != -1) {
-    printf("\nThe winner is %s with a score of %d.\n\n", game->players[winner_index].name, max_score);
+    printf("\nThe winner is %s with a score of %u.\n\n", game->players[winner_index].name, max_score);
   }
 }
 
@@ -448,7 +448,7 @@ void close_and_wait_players(game_t *game, int players_fds[][2],
     } else {
       status = 256;
     }
-    printf("El jugador %d (%s) retorno el valor %3d con puntaje %5d / %5d / %5d \n", i, game->players[i].name, status, game->players[i].score, game->players[i].valid_requests, game->players[i].invalid_requests);
+    printf("El jugador %d (%s) retorno el valor %3d con puntaje %5u / %5u / %5u \n", i, game->players[i].name, status, game->players[i].score, game->players[i].valid_requests, game->players[i].invalid_requests);
   }
 }
 
