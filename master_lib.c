@@ -256,7 +256,7 @@ void game_over(game_t *game, sync_t *sync) {
 void process_player(game_t *game, sync_t *sync, int player_count,
                     int players_fds[][2], fd_set *read_fds, fd_set *active_fds,
                     int *last_served, time_t *last_move_time,
-                    unsigned int delay) {
+                    unsigned int delay, char *view_path) {
   for (int j = 0; j < player_count; j++) {
     int i = (*last_served + j) % player_count;
 
@@ -272,11 +272,11 @@ void process_player(game_t *game, sync_t *sync, int player_count,
         if (moved) {
           *last_move_time = time(NULL);
 
-          sync_with_view(sync, delay);
+          sync_with_view(sync, delay, view_path);
 
           if (!any_player_can_move(game)) {
             game_over(game, sync);
-            sync_with_view(sync, delay);
+            sync_with_view(sync, delay, view_path);
             break;
           }
         }
@@ -348,10 +348,12 @@ bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir,
   return valid;
 }
 
-void sync_with_view(sync_t *sync, unsigned int delay) {
-  sem_post_check(&sync->have_to_print);
-  sem_wait_check(&sync->finished_printing);
-  usleep(delay * 1000);
+void sync_with_view(sync_t *sync, unsigned int delay, char *view_path) {
+  if(view_path != NULL){
+    sem_post_check(&sync->have_to_print);
+    sem_wait_check(&sync->finished_printing);
+    usleep(delay * 1000);  
+  }
 }
 
 bool any_player_can_move(game_t *game) {

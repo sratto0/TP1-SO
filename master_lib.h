@@ -50,11 +50,11 @@ void game_over(game_t *game, sync_t *sync);
 void process_player(game_t *game, sync_t *sync, int player_count,
                     int players_fds[][2], fd_set *read_fds, fd_set *active_fds,
                     int *last_served, time_t *last_move_time,
-                    unsigned int delay);
+                    unsigned int delay, char *view_path);
 int receive_move(int fd, unsigned char *dir);
 bool execute_move(game_t *game, sync_t *sync, int turno, unsigned char dir,
                   int players_fds[][2], fd_set *active_fds);
-void sync_with_view(sync_t *sync, unsigned int delay);
+void sync_with_view(sync_t *sync, unsigned int delay, char *view_path);
 bool any_player_can_move(game_t *game);
 bool is_valid_move(int x, int y, game_t *game);
 bool has_valid_moves(game_t *game, player_t *player);

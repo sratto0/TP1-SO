@@ -59,10 +59,12 @@ int main(int argc, char *argv[]) {
 
   int last_served = 0;
 
+  sync_with_view(sync, delay, view_path);
+  
   while (!game->finished) {
     if (game_ended(game)) {
       game_over(game, sync);
-      sync_with_view(sync, delay);
+      sync_with_view(sync, delay, view_path);
       break;
     }
 
@@ -78,11 +80,11 @@ int main(int argc, char *argv[]) {
       break;
     } else if (ready == 0) {
       game_over(game, sync);
-      sync_with_view(sync, delay);
+      sync_with_view(sync, delay, view_path);
       break;
     }
     process_player(game, sync, player_count, players_fds, &read_fds,
-                   &active_fds, &last_served, &last_move_time, delay);
+                   &active_fds, &last_served, &last_move_time, delay, view_path);
   }
 
   signal_all_players_ready(game, sync, player_count);
